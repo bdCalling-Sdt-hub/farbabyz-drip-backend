@@ -24,6 +24,39 @@ const createPetProfileIntoDb = catchAsync(
   }
 );
 
+const updatePetProfileIntoDb = catchAsync(
+  async (req: Request, res: Response) => {
+    let image = getFilePath(req.files, 'images');
+    const petId = req.params.id;
+    const value = {
+      image,
+      ...req.body,
+    };
+
+    const result = await PetProfileService.updatePetProfile(petId, value);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: 'Pet profile updated successfully',
+      data: result,
+    });
+  }
+);
+
+const getAllPetProfile = catchAsync(async (req: Request, res: Response) => {
+  const result = await PetProfileService.getAllPetProfile();
+
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'Pet profile retrieved successfully',
+    data: result,
+  });
+});
+
 export const PetProfileController = {
   createPetProfileIntoDb,
+  getAllPetProfile,
+  updatePetProfileIntoDb,
 };

@@ -11,6 +11,18 @@ const createPetProfileSchema = z.object({
   chest: z.string({ required_error: 'Chest is required' }),
 });
 
+const updatePetProfileSchema = z.object({
+  name: z.string().optional(),
+  user: z.string().optional(),
+  breed: z.string().optional(),
+  preference: z.string().optional(),
+  weight: z.string().optional(),
+  neck: z.string().optional(),
+  coller: z.string().optional(),
+  chest: z.string().optional(),
+});
+
 export const PetProfileValidation = {
   createPetProfileSchema,
+  updatePetProfileSchema,
 };
