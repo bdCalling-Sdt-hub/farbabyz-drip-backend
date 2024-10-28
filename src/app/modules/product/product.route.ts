@@ -21,24 +21,21 @@ router.post(
   }
 );
 
-// router.get(
-//   '/',
+router.get('/', ProductController.getAllProducts);
 
-//   BlogController.getAllBlogs
-// );
-// router.get('/:id', BlogController.getSingleblog);
+router.get('/:id', ProductController.getSingleProduct);
 
-// router.patch(
-//   '/:id',
-//   fileUploadHandler(),
-//   //   auth(USER_ROLES.USER),
-//   (req: Request, res: Response, next: NextFunction) => {
-//     req.body = BlogsValidation.createBlogsSchema.parse(
-//       JSON.parse(req.body.data)
-//     );
-//     return BlogController.updateBlog(req, res, next);
-//   }
-// );
+router.patch(
+  '/:id',
+  fileUploadHandler(),
+  //   auth(USER_ROLES.USER),
+  (req: Request, res: Response, next: NextFunction) => {
+    req.body = ProductValidation.updateProductSchema.parse(
+      JSON.parse(req.body.data)
+    );
+    return ProductController.updatedProductIntoDb(req, res, next);
+  }
+);
 
 // router.delete(
 //   '/:id',

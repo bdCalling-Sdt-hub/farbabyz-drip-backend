@@ -30,4 +30,4 @@ categorySchema.pre('save', async function (next) {
   next();
 });
 
-export const Category = model<ICategory>('catogory', categorySchema);
+export const Category = model<ICategory>('Category', categorySchema);
