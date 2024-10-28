@@ -1,17 +1,21 @@
 import { model, Schema } from 'mongoose';
-import { IFaq } from './faq.interface';
+import { IBlogs } from './blog.interface';
 
-const faqSchema = new Schema<IFaq>(
+const faqSchema = new Schema<IBlogs>(
   {
-    question: {
+    title: {
+      type: String,
+      required: true,
+      trim: true,
+      unique: true,
+    },
+    des: {
       type: String,
       required: true,
       trim: true,
     },
-    answer: {
+    image: {
       type: String,
-      required: true,
-      trim: true,
     },
     status: {
       type: String,
@@ -24,4 +28,4 @@ const faqSchema = new Schema<IFaq>(
   }
 );
 
-export const Faq = model<IFaq>('Faq', faqSchema);
+export const Blog = model<IBlogs>('blog', faqSchema);
