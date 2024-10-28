@@ -22,6 +22,56 @@ const createBlogIntoDb = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getAllBlogs = catchAsync(async (req: Request, res: Response) => {
+  const result = await BlogService.getAllBlogs(req.query);
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'Blogs retrived successfully',
+    data: result,
+  });
+});
+
+const getSingleblog = catchAsync(async (req: Request, res: Response) => {
+  const result = await BlogService.getSingleblog(req.params.id);
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'Single Blog retrived successfully',
+    data: result,
+  });
+});
+
+const deleteBlog = catchAsync(async (req: Request, res: Response) => {
+  const result = await BlogService.deleteBlog(req.params.id);
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'Blog deleted successfully',
+    data: result,
+  });
+});
+
+const updateBlog = catchAsync(async (req: Request, res: Response) => {
+  let image = getFilePath(req.files, 'images');
+  const value = {
+    image,
+    ...req.body,
+  };
+
+  const result = await BlogService.updateBlog(req.params.id, value);
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'Blog updated successfully',
+    data: result,
+  });
+});
+
 export const BlogController = {
   createBlogIntoDb,
+  getAllBlogs,
+  getSingleblog,
+  updateBlog,
+  deleteBlog,
 };

@@ -21,22 +21,29 @@ router.post(
   }
 );
 
-// router.get(
-//   '/',
-//   //   auth(USER_ROLES.USER),
-//   PetProfileController.getAllPetProfile
-// );
+router.get(
+  '/',
 
-// router.patch(
-//   '/:id',
-//   fileUploadHandler(),
-//   //   auth(USER_ROLES.USER),
-//   (req: Request, res: Response, next: NextFunction) => {
-//     req.body = PetProfileValidation.updatePetProfileSchema.parse(
-//       JSON.parse(req.body.data)
-//     );
-//     return PetProfileController.updatePetProfileIntoDb(req, res, next);
-//   }
-// );
+  BlogController.getAllBlogs
+);
+router.get('/:id', BlogController.getSingleblog);
+
+router.patch(
+  '/:id',
+  fileUploadHandler(),
+  //   auth(USER_ROLES.USER),
+  (req: Request, res: Response, next: NextFunction) => {
+    req.body = BlogsValidation.createBlogsSchema.parse(
+      JSON.parse(req.body.data)
+    );
+    return BlogController.updateBlog(req, res, next);
+  }
+);
+
+router.delete(
+  '/:id',
+  //   auth(USER_ROLES.USER),
+  BlogController.deleteBlog
+);
 
 export const BlogRoutes = router;
