@@ -3,13 +3,22 @@ import config from '../config';
 import { errorLogger, logger } from '../shared/logger';
 import { ISendEmail } from '../types/email';
 
+// const transporter = nodemailer.createTransport({
+//   host: config.email.host,
+//   port: Number(config.email.port),
+//   secure: false,
+//   auth: {
+//     user: config.email.user,
+//     pass: config.email.pass,
+//   },
+// });
 const transporter = nodemailer.createTransport({
-  host: config.email.host,
-  port: Number(config.email.port),
+  host: 'smtp.gmail.com',
+  port: 587,
   secure: false,
   auth: {
-    user: config.email.user,
-    pass: config.email.pass,
+    user: 'rifatkhan5567790@gmail.com',
+    pass: 'ahvd mujs wtcr yssg',
   },
 });
 
