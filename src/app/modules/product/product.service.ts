@@ -42,9 +42,15 @@ const updateProduct = async (id: string, payload: Partial<IProduct>) => {
   return result;
 };
 
+const deleteProduct = async (id: string) => {
+  const result = await Product.findByIdAndUpdate(id, { status: 'delete' });
+  return result;
+};
+
 export const ProductService = {
   createProductIntoDb,
   getAllProducts,
   getSingleProduct,
   updateProduct,
+  deleteProduct,
 };

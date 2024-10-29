@@ -37,10 +37,10 @@ router.patch(
   }
 );
 
-// router.delete(
-//   '/:id',
-//   //   auth(USER_ROLES.USER),
-//   BlogController.deleteBlog
-// );
+router.delete(
+  '/:id',
+  //   auth(USER_ROLES.USER),
+  ProductController.deleteProduct
+);
 
 export const ProductRoutes = router;
