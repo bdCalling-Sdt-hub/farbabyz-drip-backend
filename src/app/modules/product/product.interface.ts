@@ -5,7 +5,8 @@ export type IProduct = {
   image: string[];
   video: string;
   price: string;
-  rating?: string;
+  rating?: number;
+  count?: string;
   category: Types.ObjectId;
   size: string;
   colors: string;

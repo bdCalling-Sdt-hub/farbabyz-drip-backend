@@ -24,6 +24,9 @@ const productSchema = new Schema<IProduct>(
       required: true,
     },
     rating: {
+      type: Number,
+    },
+    count: {
       type: String,
     },
     size: {

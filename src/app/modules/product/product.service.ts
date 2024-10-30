@@ -1,3 +1,5 @@
+import QueryBuilder from '../../builder/QueryBuilder';
+import { productSearchAbleFields } from './product.constant';
 import { IProduct } from './product.interface';
 import { Product } from './product.model';
 
@@ -6,8 +8,20 @@ const createProductIntoDb = async (payload: Partial<IProduct>) => {
   return result;
 };
 
-const getAllProducts = async () => {
-  const result = await Product.find().populate('category');
+const getAllProducts = async (
+  filter: Record<string, unknown>,
+  query: Record<string, unknown>
+) => {
+  const productBuilder = new QueryBuilder(
+    Product.find(filter).populate('category'),
+    query
+  )
+    .search(productSearchAbleFields)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+  const result = await productBuilder.modelQuery;
   return result;
 };
 

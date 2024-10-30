@@ -27,8 +27,8 @@ export default {
     host: process.env.EMAIL_HOST,
     pass: process.env.EMAIL_PASS,
   },
-  super_admin: {
-    email: process.env.DMIN_EMAIL,
+  admin: {
+    email: process.env.ADMIN_EMAIL,
     password: process.env.ADMIN_PASSWORD,
   },
 };

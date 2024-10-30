@@ -22,7 +22,7 @@ router.post(
 router.patch(
   '/:id',
   fileUploadHandler(),
-  auth(USER_ROLES.USER),
+  auth(USER_ROLES.USER, USER_ROLES.ADMIN),
   (req: Request, res: Response, next: NextFunction) => {
     req.body = UserValidation.updateZodSchema.parse(JSON.parse(req.body.data));
     return UserController.updateProfile(req, res, next);
