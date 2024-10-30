@@ -13,9 +13,21 @@ const paymentSchema = new Schema<IPayment>(
       ref: 'User',
       required: true,
     },
+    product: {
+      type: Schema.Types.ObjectId,
+      ref: 'Product',
+      required: true,
+    },
+    quantity: {
+      type: Number,
+      required: true,
+    },
     email: {
       type: String,
       required: true,
+    },
+    transactionId: {
+      type: String,
     },
     status: {
       type: String,

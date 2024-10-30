@@ -23,6 +23,31 @@ const makePaymentIntent = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getAllPayment = catchAsync(async (req: Request, res: Response) => {
+  const data = await PaymentService.getAllPayments(req.query);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'Payment intent retrived successfully',
+    data: data,
+  });
+});
+
+const getAllUserPayment = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user.id;
+  const payments = await PaymentService.getAllUserPayments(userId);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'User payment list retrieved successfully',
+    data: payments,
+  });
+});
+
 export const PaymentController = {
   makePaymentIntent,
+  getAllPayment,
+  getAllUserPayment,
 };

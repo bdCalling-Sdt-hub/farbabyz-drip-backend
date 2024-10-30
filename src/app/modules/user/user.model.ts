@@ -52,22 +52,6 @@ const userSchema = new Schema<IUser, UserModal>(
     image: {
       type: String,
     },
-
-    accountInformation: {
-      status: {
-        type: Boolean,
-        default: false,
-      },
-      stripeAccountId: {
-        type: String,
-      },
-      externalAccountId: {
-        type: String,
-      },
-      currency: {
-        type: String,
-      },
-    },
     authentication: {
       type: {
         isResetPassword: {

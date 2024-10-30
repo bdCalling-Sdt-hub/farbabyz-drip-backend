@@ -43,6 +43,11 @@ const createUserFromDb = async (payload: IUser) => {
   return result;
 };
 
+const getAllUsers = async () => {
+  const getAllUser = await User.find();
+  return getAllUser;
+};
+
 const getUserProfileFromDB = async (
   user: JwtPayload
 ): Promise<Partial<IUser>> => {
@@ -77,4 +82,5 @@ export const UserService = {
   createUserFromDb,
   getUserProfileFromDB,
   updateProfileToDB,
+  getAllUsers,
 };

@@ -17,12 +17,6 @@ export type IUser = {
     oneTimeCode: number;
     expireAt: Date;
   };
-  accountInformation?: {
-    status: boolean;
-    stripeAccountId: string;
-    externalAccountId: string;
-    currency: string;
-  };
 };
 
 export type UserModal = {
