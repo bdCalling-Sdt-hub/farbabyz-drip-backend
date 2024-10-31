@@ -37,7 +37,7 @@ const createProductIntoDb = catchAsync(async (req: Request, res: Response) => {
 const getAllProducts = catchAsync(async (req: Request, res: Response) => {
   const filter = req.body;
 
-  const result = await ProductService.getAllProducts(req.query, filter);
+  const result = await ProductService.getAllProducts(req.query);
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
