@@ -18,6 +18,11 @@ const createTermsAndCondition = async (payload: Partial<ITerms>) => {
   }
 };
 
+const getTermsAndCondition = async () => {
+  const term = await TermsAndCondition.find();
+  return term;
+};
+
 const createReturnPolicy = async (payload: Partial<IRetrun>) => {
   try {
     const existingTerm = await Return.findOne();
@@ -35,7 +40,14 @@ const createReturnPolicy = async (payload: Partial<IRetrun>) => {
   }
 };
 
+const getReturnPolicy = async () => {
+  const term = await Return.find();
+  return term;
+};
+
 export const SettingService = {
   createTermsAndCondition,
   createReturnPolicy,
+  getTermsAndCondition,
+  getReturnPolicy,
 };

@@ -34,9 +34,6 @@ const removeWishListToDB = async (
 
   wishlist.products = wishlist.products.filter(id => !id.equals(productId));
 
-  // Check if the product was actually removed
-  console.log('Updated products after removal:', wishlist.products);
-
   return wishlist.save();
 };
 
