@@ -6,6 +6,8 @@ import ApiError from '../../../errors/ApiError';
 import { StatusCodes } from 'http-status-codes';
 import QueryBuilder from '../../builder/QueryBuilder';
 import { Types } from 'mongoose';
+import { sendNotifications } from '../../../helpers/notificationHelper';
+import { User } from '../user/user.model';
 
 export const stripe = new Stripe(config.payment.stripe_secret_key as string, {
   apiVersion: '2024-09-30.acacia',
@@ -31,6 +33,18 @@ const makePaymentIntent = async (payload: IPayment) => {
 
   if (!createPayment) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Payment failed');
+  }
+
+  const isUser = await User.findById(user);
+
+  if (paymentIntent) {
+    const data = {
+      text: `You have received $${amount} from ${isUser?.name} `,
+      receiver: payload.user,
+      type: 'ADMIN',
+    };
+
+    await sendNotifications(data);
   }
 
   return {
@@ -72,6 +86,8 @@ const getAllUserPayments = async (userId: Types.ObjectId) => {
 //       currency: 'usd',
 //       payment_method_types: ['card'],
 //     });
+
+//     console.log(paymentIntent.status);
 
 //     return {
 //       client_secret: paymentIntent.client_secret,
