@@ -13,6 +13,7 @@ import { ReviewRoutes } from '../app/modules/review/review.route';
 import { SettingRoutes } from '../app/modules/setting/setting.route';
 import { WishlistRoutes } from '../app/modules/wishList/wishList.route';
 import { NotificationRoutes } from '../app/modules/notification/notification.route';
+import { DashboardRoutes } from '../app/modules/dashboard/dashboard.route';
 
 const router = express.Router();
 
@@ -30,6 +31,7 @@ const apiRoutes = [
   { path: '/setting', route: SettingRoutes },
   { path: '/wishList', route: WishlistRoutes },
   { path: '/notification', route: NotificationRoutes },
+  { path: '/dashboard', route: DashboardRoutes },
 ];
 
 apiRoutes.forEach(route => router.use(route.path, route.route));

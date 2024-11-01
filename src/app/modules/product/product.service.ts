@@ -1,16 +1,30 @@
-import QueryBuilder from '../../builder/QueryBuilder';
+import { StatusCodes } from 'http-status-codes';
+import ApiError from '../../../errors/ApiError';
 import { Category } from '../category/category.model';
-import { productSearchAbleFields } from './product.constant';
+import { Payment } from '../payment/payment.model';
+import { User } from '../user/user.model';
 import { IProduct } from './product.interface';
 import { Product } from './product.model';
+import { SortOrder } from 'mongoose';
 
 const createProductIntoDb = async (payload: Partial<IProduct>) => {
+  if (!payload.image || !payload.video) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, `Image or Video are required`);
+  }
+
   const result = await Product.create(payload);
   return result;
 };
 
 const getAllProducts = async (query: Record<string, unknown>) => {
-  const { searchTerm, page, limit, ...filterData } = query;
+  const {
+    searchTerm,
+    page,
+    limit,
+    sortBy = 'createdAt',
+    order = 'desc',
+    ...filterData
+  } = query;
   const anyConditions: any[] = [];
 
   if (searchTerm) {
@@ -18,7 +32,7 @@ const getAllProducts = async (query: Record<string, unknown>) => {
       $or: [{ name: { $regex: searchTerm, $options: 'i' } }],
     }).distinct('_id');
 
-    // Only add `catogory` condition if there are matching users
+    // Only add `category` condition if there are matching categories
     if (categoriesIds.length > 0) {
       anyConditions.push({ category: { $in: categoriesIds } });
     }
@@ -40,8 +54,15 @@ const getAllProducts = async (query: Record<string, unknown>) => {
   const size = parseInt(limit as string) || 10;
   const skip = (pages - 1) * size;
 
+  // Set default sort order to show new data first
+  const sortOrder: SortOrder = order === 'desc' ? -1 : 1;
+  const sortCondition: { [key: string]: SortOrder } = {
+    [sortBy as string]: sortOrder,
+  };
+
   const result = await Product.find(whereConditions)
     .populate('category', 'name')
+    .sort(sortCondition)
     .skip(skip)
     .limit(size)
     .lean();
@@ -51,7 +72,10 @@ const getAllProducts = async (query: Record<string, unknown>) => {
     result,
     meta: {
       page: pages,
+      limit: size,
       total: count,
+      totalPages: Math.ceil(count / size),
+      currentPage: pages,
     },
   };
   return data;
@@ -69,16 +93,20 @@ const updateProduct = async (id: string, payload: Partial<IProduct>) => {
     ...remainingData,
   };
 
-  //   if (image && image.length > 0) {
-  //     for (const [index, value] of image.entries()) {
-  //       modifiedUpdateData[`image.${index}`] = value;
-  //     }
-  //   }
+  if (image && image.length > 0) {
+    const currentInfluencer = await Product.findById(id);
 
-  if (Array.isArray(image) && image.length) {
-    image.forEach((value, index) => {
-      modifiedUpdateData[`image.${index}`] = value;
-    });
+    if (currentInfluencer) {
+      const updatedImages = [...currentInfluencer.image];
+
+      image.forEach((value, index) => {
+        if (value) {
+          updatedImages[index] = value;
+        }
+      });
+
+      modifiedUpdateData.image = updatedImages;
+    }
   }
 
   const result = await Product.findByIdAndUpdate(id, modifiedUpdateData, {

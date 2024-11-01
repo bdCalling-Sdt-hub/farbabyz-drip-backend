@@ -55,7 +55,20 @@ const makePaymentIntent = async (payload: IPayment) => {
 
 const getAllPayments = async (query: Record<string, unknown>) => {
   const paymentBilder = new QueryBuilder(
-    Payment.find().populate(['user', 'product']),
+    Payment.find()
+      .populate({
+        path: 'user',
+        select: 'name email',
+      })
+      .populate({
+        path: 'product',
+        select: 'name image amount',
+        populate: {
+          path: 'category',
+          select: 'name',
+        },
+      }),
+
     query
   )
     // .search(brandSearchAbleFields)

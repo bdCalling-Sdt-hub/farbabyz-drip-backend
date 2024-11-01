@@ -1,5 +1,7 @@
 import { model, Schema } from 'mongoose';
 import { IProduct } from './product.interface';
+import ApiError from '../../../errors/ApiError';
+import { StatusCodes } from 'http-status-codes';
 
 const productSchema = new Schema<IProduct>(
   {
@@ -52,5 +54,13 @@ const productSchema = new Schema<IProduct>(
     timestamps: true,
   }
 );
+
+productSchema.pre('save', async function (next) {
+  const isExist = await Product.findOne({ name: this.name });
+  if (isExist) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'Product already exist!');
+  }
+  next();
+});
 
 export const Product = model<IProduct>('Product', productSchema);
