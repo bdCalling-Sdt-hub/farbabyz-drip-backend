@@ -94,6 +94,15 @@ const deleteProduct = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const bestSellingProducts = catchAsync(async (req: Request, res: Response) => {
+  const result = await ProductService.bestSellingProducts();
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'Best-selling Products retrived successfully',
+    data: result,
+  });
+});
 
 export const ProductController = {
   createProductIntoDb,
@@ -101,4 +110,5 @@ export const ProductController = {
   getSingleProduct,
   updatedProductIntoDb,
   deleteProduct,
+  bestSellingProducts,
 };

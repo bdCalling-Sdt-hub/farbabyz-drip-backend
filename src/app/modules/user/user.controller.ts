@@ -7,9 +7,7 @@ import getFilePath from '../../../shared/getFilePath';
 
 const createUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    let image = getFilePath(req.files, 'images');
     const value = {
-      image,
       ...req.body,
     };
 
@@ -40,11 +38,18 @@ const getUserProfile = catchAsync(async (req: Request, res: Response) => {
 const updateProfile = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const user = req.user;
-    let image = getFilePath(req.files, 'images');
+
+    let image;
+    if (req.files && 'image' in req.files && req.files.image[0]) {
+      image = `/images/${req.files.image[0].filename}`;
+    }
+
     const value = {
       image,
       ...req.body,
     };
+
+    console.log(value);
 
     const result = await UserService.updateProfileToDB(user, value);
 

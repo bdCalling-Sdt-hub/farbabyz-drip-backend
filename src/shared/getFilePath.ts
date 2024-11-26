@@ -8,7 +8,7 @@ export const getFilePathMultiple = (
   let value: any;
   Object.entries(files).forEach(([key, _value]: any) => {
     if (fieldname === key) {
-      value = _value.map((v: any) => `/${folderName}/${v.filename}`);
+      value = _value.map((v: any) => `/${folderName}s/${v.filename}`);
     }
   });
 

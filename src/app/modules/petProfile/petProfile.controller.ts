@@ -7,10 +7,14 @@ import getFilePath from '../../../shared/getFilePath';
 
 const createPetProfileIntoDb = catchAsync(
   async (req: Request, res: Response) => {
+    const users = req.user;
+
     let image = getFilePath(req.files, 'images');
+
     const value = {
       image,
       ...req.body,
+      user: users.id,
     };
 
     const result = await PetProfileService.createPetProfileIntoDb(value);
@@ -26,7 +30,11 @@ const createPetProfileIntoDb = catchAsync(
 
 const updatePetProfileIntoDb = catchAsync(
   async (req: Request, res: Response) => {
-    let image = getFilePath(req.files, 'images');
+    let image;
+    if (req.files && 'image' in req.files && req.files.image[0]) {
+      image = `/images/${req.files.image[0].filename}`;
+    }
+
     const petId = req.params.id;
     const value = {
       image,
@@ -45,7 +53,11 @@ const updatePetProfileIntoDb = catchAsync(
 );
 
 const getAllPetProfile = catchAsync(async (req: Request, res: Response) => {
-  const result = await PetProfileService.getAllPetProfile();
+  const users = req.user.id;
+
+  // const users = req.params.id;
+
+  const result = await PetProfileService.getAllPetProfile(users);
 
   sendResponse(res, {
     success: true,

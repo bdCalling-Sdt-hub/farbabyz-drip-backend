@@ -12,12 +12,12 @@ const createProductSchema = z.object({
 
 const updateProductSchema = z.object({
   name: z.string().optional(),
-  price: z.string().optional(),
+  price: z.number().optional(),
   rating: z.number().optional(),
   category: z.string().optional(),
   size: z.string().optional(),
   colors: z.string().optional(),
-  gender: z.enum(['male', 'female']),
+  gender: z.enum(['male', 'female']).optional(),
 });
 
 export const ProductValidation = {

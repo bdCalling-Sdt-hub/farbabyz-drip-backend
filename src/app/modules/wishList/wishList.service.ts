@@ -4,44 +4,25 @@ import { User } from '../user/user.model';
 
 const createWishListToDB = async (
   userId: Types.ObjectId,
-  productIds: Types.ObjectId[] = []
+  productId: string
 ) => {
-  let wishlist: any = await Wishlist.findOne({ user: userId });
-
-  if (!wishlist) {
-    wishlist = new Wishlist({ user: userId, products: productIds });
-  } else {
-    const newProducts = productIds
-      .filter(productId => !wishlist.products.includes(productId))
-      .map(productId => new Types.ObjectId(productId));
-
-    wishlist.products.push(...newProducts);
-    wishlist.markModified('products');
-  }
-
-  return wishlist.save();
+  const result = await Wishlist.create({ user: userId, product: productId });
+  return result;
 };
 
 const removeWishListToDB = async (
   userId: Types.ObjectId,
-  productId: Types.ObjectId
+  productId: string
 ) => {
-  const wishlist = await Wishlist.findOne({ user: userId });
-
-  if (!wishlist) {
-    return null;
-  }
-
-  wishlist.products = wishlist.products.filter(id => !id.equals(productId));
-
-  return wishlist.save();
+  // Attempt to remove the item from the database
+  const result = await Wishlist.findOneAndDelete({
+    user: userId,
+    product: productId,
+  });
+  return result;
 };
-
 const getAllWishListToDB = async (userId: Types.ObjectId) => {
-  const wishlist = await Wishlist.findOne({ user: userId }).populate(
-    'products'
-  );
-
+  const wishlist = await Wishlist.find({ user: userId });
   return wishlist;
 };
 

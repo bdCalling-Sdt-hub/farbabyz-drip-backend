@@ -22,7 +22,7 @@ const productSchema = new Schema<IProduct>(
       type: String,
     },
     price: {
-      type: String,
+      type: Number,
       required: true,
     },
     rating: {
@@ -55,12 +55,12 @@ const productSchema = new Schema<IProduct>(
   }
 );
 
-productSchema.pre('save', async function (next) {
-  const isExist = await Product.findOne({ name: this.name });
-  if (isExist) {
-    throw new ApiError(StatusCodes.BAD_REQUEST, 'Product already exist!');
-  }
-  next();
-});
+// productSchema.pre('save', async function (next) {
+//   const isExist = await Product.findOne({ name: this.name });
+//   if (isExist) {
+//     throw new ApiError(StatusCodes.BAD_REQUEST, 'Product already exist!');
+//   }
+//   next();
+// });
 
 export const Product = model<IProduct>('Product', productSchema);

@@ -2,7 +2,6 @@ import { z } from 'zod';
 
 const createPetProfileSchema = z.object({
   name: z.string({ required_error: 'Name is required' }),
-  user: z.string({ required_error: 'User is required' }),
   breed: z.string({ required_error: 'Breed is required' }),
   preference: z.string({ required_error: 'Preference is required' }),
   weight: z.string({ required_error: 'Weight is required' }),
@@ -13,7 +12,6 @@ const createPetProfileSchema = z.object({
 
 const updatePetProfileSchema = z.object({
   name: z.string().optional(),
-  user: z.string().optional(),
   breed: z.string().optional(),
   preference: z.string().optional(),
   weight: z.string().optional(),

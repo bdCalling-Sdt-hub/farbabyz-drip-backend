@@ -51,6 +51,8 @@ const userSchema = new Schema<IUser, UserModal>(
     },
     image: {
       type: String,
+      default:
+        'https://www.shutterstock.com/shutterstock/photos/1153673752/display_1500/stock-vector-profile-placeholder-image-gray-silhouette-no-photo-1153673752.jpg',
     },
     authentication: {
       type: {

@@ -24,6 +24,7 @@ const createUserFromDb = async (payload: IUser) => {
     otp,
     email: result.email,
   };
+
   const accountEmailTemplate = emailTemplate.createAccount(emailValues);
   emailHelper.sendEmail(accountEmailTemplate);
 
@@ -70,7 +71,7 @@ const updateProfileToDB = async (
   if (!isExistUser) {
     throw new ApiError(StatusCodes.BAD_REQUEST, "User doesn't exist!");
   }
-  console.log(payload);
+
   const updateDoc = await User.findOneAndUpdate({ _id: id }, payload, {
     new: true,
   });

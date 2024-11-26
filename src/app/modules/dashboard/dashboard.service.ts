@@ -6,7 +6,7 @@ import { User } from '../user/user.model';
 const totalStatistics = async () => {
   const [totalEarnings, totalUsers, totalProducts] = await Promise.all([
     Payment.aggregate([
-      { $match: { status: 'active' } },
+      // { $match: { status: 'active' } },
       {
         $group: {
           _id: null,
@@ -29,7 +29,7 @@ const totalStatistics = async () => {
 
 const getEarningChartData = async () => {
   const result = await Payment.aggregate([
-    { $match: { status: 'active' } },
+    // { $match: { status: 'active' } },
     {
       $group: {
         _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
@@ -60,8 +60,8 @@ const getRecentTransaction = async () => {
       select: 'name',
     })
     .populate({
-      path: 'product',
-      select: 'name',
+      path: 'products.productId',
+      select: 'name price image',
     })
     .sort({ createdAt: -1 })
     .limit(5);

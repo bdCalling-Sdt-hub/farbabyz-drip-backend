@@ -6,12 +6,12 @@ import { USER_ROLES } from '../../../enums/user';
 const router = express.Router();
 
 router.post(
-  '/add',
+  '/add/:id',
   auth(USER_ROLES.USER),
   WishListController.createWishListToDB
 );
-router.post(
-  '/remove',
+router.delete(
+  '/remove/:id',
   auth(USER_ROLES.USER),
   WishListController.removeWishListToDB
 );

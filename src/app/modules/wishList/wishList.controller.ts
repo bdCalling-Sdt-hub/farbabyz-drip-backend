@@ -6,9 +6,9 @@ import { StatusCodes } from 'http-status-codes';
 
 const createWishListToDB = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user.id;
-  const { products } = req.body;
+  const product = req.params.id;
 
-  const result = await WishListService.createWishListToDB(userId, products);
+  const result = await WishListService.createWishListToDB(userId, product);
 
   sendResponse(res, {
     success: true,
@@ -19,17 +19,38 @@ const createWishListToDB = catchAsync(async (req: Request, res: Response) => {
 });
 
 const removeWishListToDB = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.user.id;
-  const { productId } = req.body;
+  try {
+    const userId = req.user.id;
+    const productId = req.params.id;
 
-  const result = await WishListService.removeWishListToDB(userId, productId);
+    // Log the input data
+    console.log(userId, 'user');
+    console.log(productId, 'productid');
 
-  sendResponse(res, {
-    success: true,
-    statusCode: StatusCodes.OK,
-    message: 'WishList removed successfully',
-    data: result,
-  });
+    const result = await WishListService.removeWishListToDB(userId, productId);
+
+    if (!result) {
+      return sendResponse(res, {
+        success: false,
+        statusCode: StatusCodes.NOT_FOUND,
+        message: 'Item not found in the wishlist',
+      });
+    }
+
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: 'WishList removed successfully',
+      data: result,
+    });
+  } catch (error) {
+    console.error('Error removing wishlist item:', error);
+    return sendResponse(res, {
+      success: false,
+      statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
+      message: 'Something went wrong',
+    });
+  }
 });
 
 const getAllWishListToDB = catchAsync(async (req: Request, res: Response) => {

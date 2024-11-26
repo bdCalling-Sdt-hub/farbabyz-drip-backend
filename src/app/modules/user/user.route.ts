@@ -23,9 +23,32 @@ router.patch(
   '/:id',
   fileUploadHandler(),
   auth(USER_ROLES.USER, USER_ROLES.ADMIN),
-  (req: Request, res: Response, next: NextFunction) => {
-    req.body = UserValidation.updateZodSchema.parse(JSON.parse(req.body.data));
-    return UserController.updateProfile(req, res, next);
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      // Parse the body if it contains data in stringified JSON format
+      let validatedData;
+      if (req.body.data) {
+        validatedData = UserValidation.updateZodSchema.parse(
+          JSON.parse(req.body.data)
+        );
+      }
+
+      // Handle image updates if files are uploaded
+      if (req.files && Array.isArray(req.files) && req.files.length > 0) {
+        // Assuming `fileUploadHandler` stores files in req.files
+        const uploadedFiles = req.files.map((file: any) => file.path);
+        validatedData = {
+          ...validatedData,
+          image: uploadedFiles[0], // Update the specific image field
+        };
+      }
+
+      // Pass the validated data to the controller
+      req.body = validatedData;
+      await UserController.updateProfile(req, res, next);
+    } catch (error) {
+      next(error);
+    }
   }
 );
 

@@ -27,8 +27,12 @@ const createPetProfileIntoDb = async (payload: IPetProfile) => {
   return result;
 };
 
-const getAllPetProfile = async () => {
-  const result = await PetProfile.find().populate('user');
+const getAllPetProfile = async (userId: string) => {
+  const result = await PetProfile.find({ user: userId }).populate({
+    path: 'user',
+    select: 'name',
+  });
+
   return result;
 };
 
