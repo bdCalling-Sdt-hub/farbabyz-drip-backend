@@ -6,7 +6,7 @@ const createProductSchema = z.object({
   rating: z.number().optional(),
   category: z.string({ required_error: 'Category is required' }),
   size: z.string({ required_error: 'Size is required' }),
-  colors: z.string({ required_error: 'Colors is required' }),
+  colour: z.string({ required_error: 'Colors is required' }),
   gender: z.enum(['male', 'female']),
 });
 
@@ -16,7 +16,7 @@ const updateProductSchema = z.object({
   rating: z.number().optional(),
   category: z.string().optional(),
   size: z.string().optional(),
-  colors: z.string().optional(),
+  colour: z.string().optional(),
   gender: z.enum(['male', 'female']).optional(),
 });
 

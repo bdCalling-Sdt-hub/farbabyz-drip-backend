@@ -11,23 +11,33 @@ const router = express.Router();
 
 router.post(
   '/create-category',
-  //   auth(USER_ROLES.ADMIN),
+  auth(USER_ROLES.ADMIN),
   validateRequest(CategoryValidation.createCategorySchema),
   CategoryController.createCategoryToDB
 );
 
-router.get('/', CategoryController.getAllCategory);
-router.get('/:id', CategoryController.getSingleCategory);
+router.get(
+  '/',
+  auth(USER_ROLES.ADMIN, USER_ROLES.USER),
+  CategoryController.getAllCategory
+);
+
+router.get(
+  '/:id',
+  auth(USER_ROLES.ADMIN, USER_ROLES.USER),
+  CategoryController.getSingleCategory
+);
+
 router.patch(
   '/:id',
-  //   auth(USER_ROLES.ADMIN),
+  auth(USER_ROLES.ADMIN),
   validateRequest(CategoryValidation.updatedCategorySchema),
   CategoryController.updateCategory
 );
 
 router.delete(
   '/:id',
-  //   auth(USER_ROLES.ADMIN),
+  auth(USER_ROLES.ADMIN),
   CategoryController.deleteCategory
 );
 

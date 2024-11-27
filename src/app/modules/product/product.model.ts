@@ -10,6 +10,12 @@ const productSchema = new Schema<IProduct>(
       ref: 'Category',
       required: true,
     },
+
+    colour: {
+      type: Schema.Types.ObjectId,
+      ref: 'Colour',
+      required: true,
+    },
     name: {
       type: String,
       required: true,
@@ -35,10 +41,6 @@ const productSchema = new Schema<IProduct>(
       type: String,
       required: true,
     },
-    colors: {
-      type: String,
-      required: true,
-    },
     gender: {
       type: String,
       enum: ['male', 'female'],
@@ -54,13 +56,5 @@ const productSchema = new Schema<IProduct>(
     timestamps: true,
   }
 );
-
-// productSchema.pre('save', async function (next) {
-//   const isExist = await Product.findOne({ name: this.name });
-//   if (isExist) {
-//     throw new ApiError(StatusCodes.BAD_REQUEST, 'Product already exist!');
-//   }
-//   next();
-// });
 
 export const Product = model<IProduct>('Product', productSchema);

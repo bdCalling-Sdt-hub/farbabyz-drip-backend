@@ -15,6 +15,7 @@ import { WishlistRoutes } from '../app/modules/wishList/wishList.route';
 import { NotificationRoutes } from '../app/modules/notification/notification.route';
 import { DashboardRoutes } from '../app/modules/dashboard/dashboard.route';
 import { SubscriberRoutes } from '../app/modules/subscriber/subscriber.route';
+import { ColourRoutes } from '../app/modules/colours/colours.route';
 
 const router = express.Router();
 
@@ -34,6 +35,7 @@ const apiRoutes = [
   { path: '/notification', route: NotificationRoutes },
   { path: '/dashboard', route: DashboardRoutes },
   { path: '/subscriber', route: SubscriberRoutes },
+  { path: '/colour', route: ColourRoutes },
 ];
 
 apiRoutes.forEach(route => router.use(route.path, route.route));

@@ -1,5 +1,4 @@
 import express, { NextFunction, Request, Response } from 'express';
-
 import fileUploadHandler from '../../middlewares/fileUploadHandler';
 import { PetProfileValidation } from './petProfile.validation';
 import { PetProfileController } from './petProfile.controller';

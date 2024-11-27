@@ -7,6 +7,7 @@ import { IProduct, UpdateProductsPayload } from './product.interface';
 import { Product } from './product.model';
 import { SortOrder } from 'mongoose';
 import unlinkFile from '../../../shared/unlinkFile';
+import { Colour } from '../colours/colours.model';
 
 const createProductIntoDb = async (payload: Partial<IProduct>) => {
   if (!payload.image || !payload.video) {
@@ -26,6 +27,7 @@ const getAllProducts = async (query: Record<string, unknown>) => {
     page,
     limit,
     sortBy,
+
     order,
     newProduct,
     bestSellingProduct,
@@ -44,6 +46,17 @@ const getAllProducts = async (query: Record<string, unknown>) => {
     }
   }
 
+  if (colors) {
+    const coloursIds = await Colour.find({
+      $or: [{ colourName: { $regex: colors, $options: 'i' } }],
+    }).distinct('_id');
+
+    // Only add `category` condition if there are matching categories
+    if (coloursIds.length > 0) {
+      anyConditions.push({ colour: { $in: coloursIds } });
+    }
+  }
+
   if (searchTerm) {
     anyConditions.push({
       $or: [
@@ -53,11 +66,6 @@ const getAllProducts = async (query: Record<string, unknown>) => {
     });
   }
 
-  if (colors) {
-    anyConditions.push({
-      $or: [{ colors: { $regex: colors, $options: 'i' } }],
-    });
-  }
   if (gender) {
     anyConditions.push({
       $or: [{ gender: { $regex: gender, $options: 'i' } }],
@@ -107,6 +115,7 @@ const getAllProducts = async (query: Record<string, unknown>) => {
 
   const result = await Product.find(whereConditions)
     .populate('category', 'name')
+    .populate('colour', 'colourName')
     .sort(sortCondition)
     .skip(skip)
     .limit(size)

@@ -8,8 +8,8 @@ export type IProduct = {
   rating?: number;
   count?: string;
   category: Types.ObjectId;
+  colour: Types.ObjectId;
   size: string;
-  colors: string;
   gender: 'male' | 'female';
   status: 'active' | 'delete';
 };

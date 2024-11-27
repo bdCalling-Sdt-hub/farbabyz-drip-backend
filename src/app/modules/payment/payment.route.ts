@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.post(
   '/create-payment',
-  auth(USER_ROLES.USER),
+  // auth(USER_ROLES.USER),
   PaymentController.makePaymentIntent
 );
 

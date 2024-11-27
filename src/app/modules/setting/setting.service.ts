@@ -19,7 +19,7 @@ const createTermsAndCondition = async (payload: Partial<ITerms>) => {
 };
 
 const getTermsAndCondition = async () => {
-  const term = await TermsAndCondition.find();
+  const term = await TermsAndCondition.findOne();
   return term;
 };
 
@@ -41,7 +41,7 @@ const createReturnPolicy = async (payload: Partial<IRetrun>) => {
 };
 
 const getReturnPolicy = async () => {
-  const term = await Return.find();
+  const term = await Return.findOne();
   return term;
 };
 
