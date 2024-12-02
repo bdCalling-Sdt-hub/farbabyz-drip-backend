@@ -9,6 +9,7 @@ export type IUser = {
   password: string;
   postCode: string;
   address?: string;
+  country?: string;
   status: 'active' | 'delete';
   verified: boolean;
   image: string;

@@ -104,6 +104,16 @@ const bestSellingProducts = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const similarProducts = catchAsync(async (req: Request, res: Response) => {
+  const result = await ProductService.similarProducts(req.params.id);
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'Similar Products retrived successfully',
+    data: result,
+  });
+});
+
 export const ProductController = {
   createProductIntoDb,
   getAllProducts,
@@ -111,4 +121,5 @@ export const ProductController = {
   updatedProductIntoDb,
   deleteProduct,
   bestSellingProducts,
+  similarProducts,
 };

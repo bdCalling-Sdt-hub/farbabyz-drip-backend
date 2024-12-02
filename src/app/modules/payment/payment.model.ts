@@ -13,8 +13,8 @@ const paymentSchema = new Schema<IPayment>(
       ref: 'User',
       required: true,
     },
+
     products: [
-      // Update to use the new structure
       {
         productId: {
           type: Schema.Types.ObjectId,
@@ -25,12 +25,27 @@ const paymentSchema = new Schema<IPayment>(
           type: Number,
           required: true,
         },
+        size: {
+          type: String,
+          required: true,
+        },
+        neckSize: {
+          type: String,
+          required: true,
+        },
+        chestSize: {
+          type: String,
+          required: true,
+        },
+        collarSize: {
+          type: String,
+          required: true,
+        },
+        price: {
+          type: Number,
+        },
       },
     ],
-    // quantity: {
-    //   type: Number,
-    //   required: true,
-    // },
     email: {
       type: String,
       required: true,
@@ -41,10 +56,23 @@ const paymentSchema = new Schema<IPayment>(
     transactionId: {
       type: String,
     },
+    chestSize: {
+      type: String,
+    },
+    neckSize: {
+      type: String,
+    },
+    collarSize: {
+      type: String,
+    },
+    size: {
+      type: String,
+    },
     status: {
       type: String,
-      enum: ['active', 'delete'],
-      default: 'active',
+    },
+    client_secret: {
+      type: String,
     },
   },
   {

@@ -135,7 +135,7 @@ const getAllProducts = async (query: Record<string, unknown>) => {
   return data;
 };
 
-const getAllProductForNew = async (query: Record<string, unknown>) => {
+const hello = async (query: Record<string, unknown>) => {
   const {
     searchTerm,
     page,
@@ -147,14 +147,12 @@ const getAllProductForNew = async (query: Record<string, unknown>) => {
   const anyConditions: any[] = [];
 
   if (searchTerm) {
-    const categoriesIds = await Category.find({
-      $or: [{ name: { $regex: searchTerm, $options: 'i' } }],
-    }).distinct('_id');
-
-    // Only add `category` condition if there are matching categories
-    if (categoriesIds.length > 0) {
-      anyConditions.push({ category: { $in: categoriesIds } });
-    }
+    anyConditions.push({
+      $or: [
+        { name: { $regex: searchTerm, $options: 'i' } },
+        { description: { $regex: searchTerm, $options: 'i' } },
+      ],
+    });
   }
 
   if (Object.keys(filterData).length > 0) {
@@ -213,6 +211,13 @@ const getSingleProduct = async (id: string) => {
   return result;
 };
 
+const similarProducts = async (category: string) => {
+  const result = await Product.find({ category: category })
+    .populate('category', 'name')
+    .limit(10);
+  return result;
+};
+
 const updateProduct = async (id: string, payload: UpdateProductsPayload) => {
   const isExistProducts = await Product.findById(id);
 
@@ -259,4 +264,5 @@ export const ProductService = {
   updateProduct,
   deleteProduct,
   bestSellingProducts,
+  similarProducts,
 };

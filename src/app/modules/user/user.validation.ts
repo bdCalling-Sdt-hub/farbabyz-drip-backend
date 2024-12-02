@@ -14,6 +14,7 @@ const updateZodSchema = z.object({
   phone: z.string().optional(),
   address: z.string().optional(),
   postCode: z.string().optional(),
+  country: z.string().optional(),
 });
 
 const updateLocationZodSchema = z.object({

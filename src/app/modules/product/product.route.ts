@@ -32,10 +32,15 @@ router.get(
   // auth(USER_ROLES.USER, USER_ROLES.ADMIN),
   ProductController.bestSellingProducts
 );
+router.get(
+  '/get-similar-products/:id',
+  // auth(USER_ROLES.USER, USER_ROLES.ADMIN),
+  ProductController.similarProducts
+);
 
 router.get(
   '/:id',
-  auth(USER_ROLES.USER, USER_ROLES.ADMIN),
+  // auth(USER_ROLES.USER, USER_ROLES.ADMIN),
   ProductController.getSingleProduct
 );
 

@@ -20,7 +20,7 @@ router.post(
 );
 
 router.patch(
-  '/:id',
+  '/update-profile',
   fileUploadHandler(),
   auth(USER_ROLES.USER, USER_ROLES.ADMIN),
   async (req: Request, res: Response, next: NextFunction) => {

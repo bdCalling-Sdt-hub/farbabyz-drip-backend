@@ -27,7 +27,7 @@ const getEarningChartData = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getRecentTransaction = catchAsync(async (req: Request, res: Response) => {
-  const result = await DashboardService.getRecentTransaction();
+  const result = await DashboardService.getRecentTransaction(req.query);
 
   sendResponse(res, {
     success: true,

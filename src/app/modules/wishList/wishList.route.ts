@@ -17,5 +17,10 @@ router.delete(
 );
 
 router.get('/', auth(USER_ROLES.USER), WishListController.getAllWishListToDB);
+router.get(
+  '/get-my-wishlist',
+  auth(USER_ROLES.USER),
+  WishListController.getmyWishList
+);
 
 export const WishlistRoutes = router;

@@ -24,6 +24,9 @@ const productSchema = new Schema<IProduct>(
     image: {
       type: [String],
     },
+    features: {
+      type: [String],
+    },
     video: {
       type: String,
     },
@@ -37,10 +40,16 @@ const productSchema = new Schema<IProduct>(
     count: {
       type: String,
     },
-    size: {
+    description: {
       type: String,
       required: true,
     },
+    size: [
+      {
+        type: String,
+        required: true,
+      },
+    ],
     gender: {
       type: String,
       enum: ['male', 'female'],

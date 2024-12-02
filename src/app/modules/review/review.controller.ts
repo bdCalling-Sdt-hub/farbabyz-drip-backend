@@ -5,7 +5,14 @@ import sendResponse from '../../../shared/sendResponse';
 import { StatusCodes } from 'http-status-codes';
 
 const createReviewToDB = catchAsync(async (req: Request, res: Response) => {
-  const result = await ReviewService.createReviewToDB(req.body);
+  const userId = req.user.id;
+
+  const value = {
+    ...req.body,
+    user: userId,
+  };
+
+  const result = await ReviewService.createReviewToDB(value);
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,

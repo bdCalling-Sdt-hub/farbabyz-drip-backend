@@ -7,10 +7,15 @@ const router = express.Router();
 
 router.post(
   '/create-payment',
-  // auth(USER_ROLES.USER),
+  auth(USER_ROLES.USER),
   PaymentController.makePaymentIntent
 );
 
+router.patch(
+  '/payment-confirmation',
+  auth(USER_ROLES.USER),
+  PaymentController.paymentConfirmation
+);
 router.get('/', auth(USER_ROLES.ADMIN), PaymentController.getAllPayment);
 
 router.get(
@@ -18,5 +23,18 @@ router.get(
   auth(USER_ROLES.USER),
   PaymentController.getAllUserPayment
 );
+
+//webhook
+router.post(
+  '/create-checkout-session',
+  auth(USER_ROLES.USER),
+  PaymentController.createCheckoutSessionController
+);
+
+// router.post(
+//   '/webhook',
+//   express.raw({ type: 'application/json' }), // Use raw body parsing
+//   PaymentController.stripeWebhookController
+// );
 
 export const PaymentRoutes = router;

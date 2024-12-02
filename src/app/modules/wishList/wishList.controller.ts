@@ -24,8 +24,6 @@ const removeWishListToDB = catchAsync(async (req: Request, res: Response) => {
     const productId = req.params.id;
 
     // Log the input data
-    console.log(userId, 'user');
-    console.log(productId, 'productid');
 
     const result = await WishListService.removeWishListToDB(userId, productId);
 
@@ -65,8 +63,21 @@ const getAllWishListToDB = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getmyWishList = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user.id;
+  const result = await WishListService.myWishList(userId);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: 'WishList retrived successfully',
+    data: result,
+  });
+});
+
 export const WishListController = {
   createWishListToDB,
   removeWishListToDB,
   getAllWishListToDB,
+  getmyWishList,
 };

@@ -26,8 +26,14 @@ const getAllWishListToDB = async (userId: Types.ObjectId) => {
   return wishlist;
 };
 
+const myWishList = async (userId: Types.ObjectId) => {
+  const wishlist = await Wishlist.find({ user: userId }).populate('product');
+  return wishlist;
+};
+
 export const WishListService = {
   createWishListToDB,
   removeWishListToDB,
   getAllWishListToDB,
+  myWishList,
 };
