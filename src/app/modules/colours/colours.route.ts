@@ -13,13 +13,13 @@ router.post(
 
 router.get(
   '/get-colours',
-  // auth(USER_ROLES.ADMIN, USER_ROLES.USER),
+  auth(USER_ROLES.ADMIN, USER_ROLES.USER),
   ColourController.getAllColours
 );
 
 router.get(
   '/:id',
-  // auth(USER_ROLES.ADMIN, USER_ROLES.USER),
+  auth(USER_ROLES.ADMIN, USER_ROLES.USER),
   ColourController.getSingleColour
 );
 

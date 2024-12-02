@@ -63,7 +63,7 @@ const updateProfile = catchAsync(
 );
 
 const getAllUser = catchAsync(async (req: Request, res: Response) => {
-  const result = await UserService.getAllUsers();
+  const result = await UserService.getAllUsers(req.query);
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,

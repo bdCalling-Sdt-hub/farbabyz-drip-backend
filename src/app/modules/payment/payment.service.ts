@@ -241,8 +241,8 @@ const createCheckoutSessionService = async (
       price_data: {
         currency: 'usd',
         product_data: {
-          name: 'Service Payment',
-          description: 'Payment for user service',
+          name: 'Order Payment',
+          description: 'Payment for user order',
         },
         unit_amount: Math.round(product.price * 100),
       },
@@ -275,13 +275,15 @@ const handleStripeWebhookService = async (event: Stripe.Event) => {
     case 'checkout.session.completed': {
       const session = event.data.object as Stripe.Checkout.Session;
 
-      const { amount_total, metadata, payment_intent } = session;
+      const { amount_total, metadata, payment_intent, client_secret } = session;
       const userId = metadata?.userId as string; // Ensure you pass metadata when creating a checkout session
       const products = JSON.parse(metadata?.products || '[]');
       const email = session.customer_email || '';
-      const client_secret = payment_intent || '';
+      // const client_secret = payment_intent || '';
 
       const amountTotal = (amount_total ?? 0) / 100;
+
+      console.log(session, 'session');
 
       const paymentRecord = new Payment({
         amount: amountTotal, // Convert from cents to currency
@@ -289,7 +291,7 @@ const handleStripeWebhookService = async (event: Stripe.Event) => {
         products,
         email,
         transactionId: payment_intent,
-        client_secret,
+        client_secret: client_secret,
         status: 'Completed',
       });
 

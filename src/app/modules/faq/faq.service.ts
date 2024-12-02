@@ -38,11 +38,7 @@ const updateFaq = async (id: string, payload: Partial<IFaq>) => {
 };
 
 const deleteFaq = async (id: string) => {
-  const result = await Faq.findByIdAndUpdate(
-    id,
-    { status: 'delete' },
-    { new: true, runValidators: true }
-  );
+  const result = await Faq.findByIdAndDelete(id);
   return result;
 };
 

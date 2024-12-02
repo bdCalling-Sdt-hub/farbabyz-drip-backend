@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 import { JwtPayload } from 'jsonwebtoken';
-import mongoose, { startSession } from 'mongoose';
+import mongoose, { SortOrder, startSession } from 'mongoose';
 import { USER_ROLES } from '../../../enums/user';
 import ApiError from '../../../errors/ApiError';
 import { emailHelper } from '../../../helpers/emailHelper';
@@ -44,9 +44,71 @@ const createUserFromDb = async (payload: IUser) => {
   return result;
 };
 
-const getAllUsers = async () => {
-  const getAllUser = await User.find();
-  return getAllUser;
+// const getAllUsers = async () => {
+//   const getAllUser = await User.find({ role: USER_ROLES.USER });
+//   return getAllUser;
+// };
+
+const getAllUsers = async (query: Record<string, unknown>) => {
+  const {
+    searchTerm,
+    page,
+    limit,
+    sortBy = 'createdAt',
+    order = 'desc',
+    ...filterData
+  } = query;
+  const anyConditions: any[] = [];
+
+  if (searchTerm) {
+    anyConditions.push({
+      $or: [
+        { fullName: { $regex: searchTerm, $options: 'i' } },
+        { description: { $regex: searchTerm, $options: 'i' } },
+      ],
+    });
+  }
+
+  if (Object.keys(filterData).length > 0) {
+    const filterConditions = Object.entries(filterData).map(
+      ([field, value]) => ({
+        [field]: value,
+      })
+    );
+    anyConditions.push({ $and: filterConditions });
+  }
+
+  // Apply filter conditions
+  const whereConditions =
+    anyConditions.length > 0 ? { $and: anyConditions } : {};
+  const pages = parseInt(page as string) || 1;
+  const size = parseInt(limit as string) || 10;
+  const skip = (pages - 1) * size;
+
+  // Set default sort order to show new data first
+  const sortOrder: SortOrder = order === 'desc' ? -1 : 1;
+  const sortCondition: { [key: string]: SortOrder } = {
+    [sortBy as string]: sortOrder,
+  };
+
+  const result = await User.find(whereConditions)
+    .sort(sortCondition)
+    .skip(skip)
+    .limit(size)
+    .lean();
+  const count = await User.countDocuments(whereConditions);
+
+  const data: any = {
+    result,
+    meta: {
+      page: pages,
+      limit: size,
+      total: count,
+      totalPages: Math.ceil(count / size),
+      currentPage: pages,
+    },
+  };
+  return data;
 };
 
 const getUserProfileFromDB = async (

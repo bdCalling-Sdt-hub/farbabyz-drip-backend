@@ -1,5 +1,3 @@
-// import { Types } from 'mongoose';
-
 import { Types } from 'mongoose';
 
 // export type IProductWithQuantity = {
@@ -28,7 +26,7 @@ export interface IProductWithQuantity {
   neckSize: string;
   chestSize: string;
   collarSize: string;
-  price: number;
+  price?: number;
 }
 
 export type IPayment = {

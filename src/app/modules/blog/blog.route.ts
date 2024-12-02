@@ -23,12 +23,12 @@ router.post(
 
 router.get(
   '/',
-  // auth(USER_ROLES.USER, USER_ROLES.ADMIN),
+  auth(USER_ROLES.USER, USER_ROLES.ADMIN),
   BlogController.getAllBlogs
 );
 router.get(
   '/:id',
-  // auth(USER_ROLES.USER, USER_ROLES.ADMIN),
+  auth(USER_ROLES.USER, USER_ROLES.ADMIN),
   BlogController.getSingleblog
 );
 

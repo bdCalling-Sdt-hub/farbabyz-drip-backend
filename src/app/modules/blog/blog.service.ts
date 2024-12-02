@@ -43,11 +43,7 @@ const updateBlog = async (id: string, payload: Partial<IBlogs>) => {
 };
 
 const deleteBlog = async (id: string) => {
-  const result = await Blog.findByIdAndUpdate(
-    id,
-    { status: 'delete' },
-    { new: true, runValidators: true }
-  );
+  const result = await Blog.findByIdAndDelete(id);
   return result;
 };
 

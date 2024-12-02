@@ -53,11 +53,17 @@ router.patch(
 );
 
 router.get(
-  '/profile',
+  '/user',
   auth(USER_ROLES.ADMIN, USER_ROLES.USER),
   UserController.getUserProfile
 );
 
-router.get('/user', auth(USER_ROLES.ADMIN), UserController.getUserProfile);
+router.get('/get-all-user', auth(USER_ROLES.ADMIN), UserController.getAllUser);
+
+router.get(
+  '/profile',
+  auth(USER_ROLES.ADMIN, USER_ROLES.USER),
+  UserController.getUserProfile
+);
 
 export const UserRoutes = router;

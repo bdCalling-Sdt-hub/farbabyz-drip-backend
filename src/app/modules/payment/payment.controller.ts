@@ -70,7 +70,10 @@ const getAllUserPayment = catchAsync(async (req: Request, res: Response) => {
 ///webhook
 
 const createCheckoutSessionController = async (req: Request, res: Response) => {
-  const { userId, email, products } = req.body;
+  const userId: string = req.user.id;
+  const email: string = req.user.email;
+
+  const { products } = req.body;
 
   try {
     const sessionUrl = await PaymentService.createCheckoutSessionService(
