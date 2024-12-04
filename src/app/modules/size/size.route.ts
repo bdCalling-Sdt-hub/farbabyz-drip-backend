@@ -13,13 +13,13 @@ router.post(
 
 router.get(
   '/get-size',
-  auth(USER_ROLES.ADMIN, USER_ROLES.USER),
+  //   auth(USER_ROLES.ADMIN, USER_ROLES.USER),
   SizeController.getAllColours
 );
 
 router.get(
   '/:id',
-  auth(USER_ROLES.ADMIN, USER_ROLES.USER),
+  //   auth(USER_ROLES.ADMIN, USER_ROLES.USER),
   SizeController.getSingleColour
 );
 

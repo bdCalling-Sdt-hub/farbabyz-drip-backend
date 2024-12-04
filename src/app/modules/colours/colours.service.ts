@@ -1,3 +1,5 @@
+import { StatusCodes } from 'http-status-codes';
+import ApiError from '../../../errors/ApiError';
 import { IColours } from './colours.interface';
 import { Colour } from './colours.model';
 
@@ -17,6 +19,11 @@ const getSingleColour = async (id: string) => {
 };
 
 const updateColour = async (id: string, payload: Partial<IColours>) => {
+  // const isExist = await Colour.findOne({ colourName: payload.colourName });
+  // if (isExist) {
+  //   throw new ApiError(StatusCodes.BAD_REQUEST, 'Colour already exist!');
+  // }
+
   const result = await Colour.findByIdAndUpdate(id, payload, {
     new: true,
     runValidators: true,

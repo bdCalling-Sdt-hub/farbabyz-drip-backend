@@ -9,7 +9,7 @@ const createColourToDB = catchAsync(async (req, res) => {
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
-    message: 'Colour created successfully',
+    message: 'size created successfully',
     data: result,
   });
 });
@@ -19,7 +19,7 @@ const getAllColours = catchAsync(async (req, res) => {
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
-    message: 'Colours retrived successfully',
+    message: 'size retrived successfully',
     data: result,
   });
 });
@@ -29,7 +29,7 @@ const getSingleColour = catchAsync(async (req, res) => {
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
-    message: 'Colour retrived successfully',
+    message: 'size retrived successfully',
     data: result,
   });
 });
@@ -40,7 +40,7 @@ const updateColourToDB = catchAsync(async (req, res) => {
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
-    message: 'Colour updated successfully',
+    message: 'size updated successfully',
     data: result,
   });
 });
@@ -51,7 +51,7 @@ const deleteColour = catchAsync(async (req, res) => {
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
-    message: 'Colour deleted successfully',
+    message: 'size deleted successfully',
     data: result,
   });
 });

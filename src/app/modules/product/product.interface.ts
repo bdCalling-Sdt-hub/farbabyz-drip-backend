@@ -9,7 +9,7 @@ export type IProduct = {
   count?: string;
   category: Types.ObjectId;
   colour: Types.ObjectId;
-  size: string[];
+  size: Types.ObjectId[];
   description: string;
   features: string[];
   gender: 'male' | 'female';

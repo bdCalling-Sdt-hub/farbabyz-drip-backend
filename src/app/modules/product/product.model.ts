@@ -46,8 +46,8 @@ const productSchema = new Schema<IProduct>(
     },
     size: [
       {
-        type: String,
-        required: true,
+        type: Schema.Types.ObjectId,
+        ref: 'Size',
       },
     ],
     gender: {

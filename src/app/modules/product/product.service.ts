@@ -5,9 +5,10 @@ import { Payment } from '../payment/payment.model';
 import { User } from '../user/user.model';
 import { IProduct, UpdateProductsPayload } from './product.interface';
 import { Product } from './product.model';
-import { SortOrder } from 'mongoose';
+import { SortOrder, model } from 'mongoose';
 import unlinkFile from '../../../shared/unlinkFile';
 import { Colour } from '../colours/colours.model';
+import { Size } from '../size/size.model';
 
 const createProductIntoDb = async (payload: Partial<IProduct>) => {
   if (!payload.image || !payload.video) {
@@ -25,9 +26,9 @@ const getAllProducts = async (query: Record<string, unknown>) => {
     colors,
     gender,
     page,
+    sizes,
     limit,
     sortBy,
-
     order,
     newProduct,
     bestSellingProduct,
@@ -54,6 +55,16 @@ const getAllProducts = async (query: Record<string, unknown>) => {
     // Only add `category` condition if there are matching categories
     if (coloursIds.length > 0) {
       anyConditions.push({ colour: { $in: coloursIds } });
+    }
+  }
+
+  if (sizes) {
+    const sizeIds = await Size.find({
+      $or: [{ sizeName: { $regex: sizes, $options: 'i' } }],
+    }).distinct('_id');
+
+    if (sizeIds.length > 0) {
+      anyConditions.push({ size: { $in: sizeIds } });
     }
   }
 
@@ -116,10 +127,15 @@ const getAllProducts = async (query: Record<string, unknown>) => {
   const result = await Product.find(whereConditions)
     .populate('category', 'name')
     .populate('colour', 'colourName')
+    .populate({
+      path: 'size',
+      select: 'sizeName',
+    })
     .sort(sortCondition)
     .skip(skip)
-    .limit(size)
-    .lean();
+    .limit(size);
+  // .lean();
+  // .exec();
   const count = await Product.countDocuments(whereConditions);
 
   const data: any = {
@@ -207,14 +223,20 @@ const bestSellingProducts = async () => {
 };
 
 const getSingleProduct = async (id: string) => {
-  const result = await Product.findById(id).populate('category', 'name');
+  const result = await Product.findById(id)
+    .populate('category', 'name')
+    .populate('size', 'sizeName');
   return result;
 };
 
 const similarProducts = async (category: string) => {
   const result = await Product.find({ category: category })
     .populate('category', 'name')
+    .populate('size', 'sizeName')
     .limit(10);
+
+  console.log(result);
+
   return result;
 };
 

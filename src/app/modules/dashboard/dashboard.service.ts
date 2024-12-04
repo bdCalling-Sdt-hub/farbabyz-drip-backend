@@ -28,31 +28,128 @@ const totalStatistics = async () => {
   };
 };
 
-const getEarningChartData = async () => {
-  const result = await Payment.aggregate([
-    { $match: { status: 'succeeded' } },
-    {
-      $group: {
-        _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
-        totalAmount: { $sum: '$amount' },
-      },
-    },
-    {
-      $addFields: {
-        month: {
-          $dateToString: {
-            format: '%b',
-            date: { $dateFromString: { dateString: '$_id' } },
-          },
-        },
-      },
-    },
-    {
-      $sort: { _id: 1 },
-    },
-  ]);
-  return result;
-};
+// const getEarningChartData = async (query: Record<string, unknown>) => {
+//   const {
+//     searchTerm,
+//     page,
+//     limit,
+//     sortBy = 'createdAt',
+//     order = 'desc',
+//     ...filterData
+//   } = query;
+//   const anyConditions: any[] = [];
+
+//   if (searchTerm) {
+//     anyConditions.push({
+//       $or: [
+//         { fullName: { $regex: searchTerm, $options: 'i' } },
+//         { description: { $regex: searchTerm, $options: 'i' } },
+//       ],
+//     });
+//   }
+
+//   // Define all months (in short format)
+//   const months = [
+//     'Jan',
+//     'Feb',
+//     'Mar',
+//     'Apr',
+//     'May',
+//     'Jun',
+//     'Jul',
+//     'Aug',
+//     'Sep',
+//     'Oct',
+//     'Nov',
+//     'Dec',
+//   ];
+
+//   const result = await Payment.aggregate([
+//     { $match: { status: 'succeeded' } },
+//     {
+//       $group: {
+//         _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+//         totalAmount: { $sum: '$amount' },
+//       },
+//     },
+//     {
+//       $addFields: {
+//         month: {
+//           $dateToString: {
+//             format: '%b',
+//             date: { $dateFromString: { dateString: '$_id' } },
+//           },
+//         },
+//         year: {
+//           $dateToString: {
+//             format: '%Y',
+//             date: { $dateFromString: { dateString: '$_id' } },
+//           },
+//         },
+//       },
+//     },
+//     {
+//       $sort: { _id: 1 },
+//     },
+//     {
+//       $project: {
+//         month: 1,
+//         totalAmount: 1,
+//         year: 1,
+//       },
+//     },
+//     {
+//       $group: {
+//         _id: '$year',
+//         earnings: {
+//           $push: {
+//             month: '$month',
+//             totalAmount: '$totalAmount',
+//           },
+//         },
+//       },
+//     },
+//     {
+//       $addFields: {
+//         allMonths: months,
+//       },
+//     },
+//     {
+//       $project: {
+//         earnings: {
+//           $map: {
+//             input: '$allMonths',
+//             as: 'month',
+//             in: {
+//               $let: {
+//                 vars: {
+//                   monthData: {
+//                     $arrayElemAt: [
+//                       {
+//                         $filter: {
+//                           input: '$earnings',
+//                           as: 'item',
+//                           cond: { $eq: ['$$item.month', '$$month'] },
+//                         },
+//                       },
+//                       0,
+//                     ],
+//                   },
+//                 },
+//                 in: {
+//                   month: '$$month',
+//                   totalAmount: { $ifNull: ['$$monthData.totalAmount', 0] },
+//                 },
+//               },
+//             },
+//           },
+//         },
+//       },
+//     },
+//   ]);
+
+//   return result;
+// };
 
 // const getRecentTransaction = async () => {
 //   const result = await Payment.find({ status: 'succeeded' })
@@ -68,6 +165,165 @@ const getEarningChartData = async () => {
 //     .limit(5);
 //   return result;
 // };
+
+const getEarningChartData = async (query: Record<string, unknown>) => {
+  const {
+    searchTerm,
+    page,
+    month,
+    year,
+    limit,
+    sortBy = 'createdAt',
+    order = 'desc',
+    ...filterData
+  } = query;
+
+  const anyConditions: any[] = [];
+
+  // Search filter: If searchTerm is provided, search for it in month or year
+  if (searchTerm) {
+    anyConditions.push({
+      $or: [
+        { month: { $regex: searchTerm, $options: 'i' } },
+        { year: { $regex: searchTerm, $options: 'i' } },
+      ],
+    });
+  }
+
+  // Filter by month (if provided)
+  if (month) {
+    anyConditions.push({
+      month: { $regex: month, $options: 'i' },
+    });
+  }
+
+  // Filter by year (if provided)
+  if (year) {
+    anyConditions.push({
+      'earnings.year': year, // Filter by the year
+    });
+  }
+
+  // Add additional filters to the conditions if they exist
+  if (filterData) {
+    for (const [key, value] of Object.entries(filterData)) {
+      if (value) {
+        anyConditions.push({ [key]: value });
+      }
+    }
+  }
+
+  // Define all months (in short format)
+  const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+
+  const matchConditions: any = { status: 'succeeded' };
+
+  // If search or filters exist, apply them in the $match stage
+  if (anyConditions.length > 0) {
+    matchConditions['$and'] = anyConditions;
+  }
+
+  const result = await Payment.aggregate([
+    { $match: matchConditions }, // Match the conditions
+    {
+      $group: {
+        _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } }, // Group by date
+        totalAmount: { $sum: '$amount' }, // Sum the totalAmount
+      },
+    },
+    {
+      $addFields: {
+        month: {
+          $dateToString: {
+            format: '%b',
+            date: { $dateFromString: { dateString: '$_id' } },
+          },
+        },
+        year: {
+          $dateToString: {
+            format: '%Y',
+            date: { $dateFromString: { dateString: '$_id' } },
+          },
+        },
+      },
+    },
+    {
+      $sort: { _id: 1 }, // Sort by year
+    },
+    {
+      $project: {
+        month: 1,
+        totalAmount: 1,
+        year: 1, // Include year in the project stage
+      },
+    },
+    {
+      $group: {
+        _id: '$year', // Group by year
+        earnings: {
+          $push: {
+            month: '$month',
+            totalAmount: '$totalAmount',
+            year: '$year', // Include the year in the earnings
+          },
+        },
+      },
+    },
+    {
+      $addFields: {
+        allMonths: months, // Add all months for consistency
+      },
+    },
+    {
+      $project: {
+        earnings: {
+          $map: {
+            input: '$allMonths',
+            as: 'month',
+            in: {
+              $let: {
+                vars: {
+                  monthData: {
+                    $arrayElemAt: [
+                      {
+                        $filter: {
+                          input: '$earnings',
+                          as: 'item',
+                          cond: { $eq: ['$$item.month', '$$month'] },
+                        },
+                      },
+                      0,
+                    ],
+                  },
+                },
+                in: {
+                  month: '$$month',
+                  totalAmount: { $ifNull: ['$$monthData.totalAmount', 0] },
+                  year: '$$monthData.year', // Include year in the result
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  ]);
+
+  return result;
+};
 
 const getRecentTransaction = async (query: Record<string, unknown>) => {
   const {
