@@ -5,7 +5,7 @@ import { Payment } from './payment.model';
 import ApiError from '../../../errors/ApiError';
 import { StatusCodes } from 'http-status-codes';
 import QueryBuilder from '../../builder/QueryBuilder';
-import { Types } from 'mongoose';
+import { SortOrder, Types } from 'mongoose';
 import { sendNotifications } from '../../../helpers/notificationHelper';
 import { User } from '../user/user.model';
 import { Product } from '../product/product.model';
@@ -201,21 +201,92 @@ const paymentConfirmation = async (payload: IPayment) => {
   return updatePayment;
 };
 
+// const getAllPayments = async (query: Record<string, unknown>) => {
+//   const paymentBilder = new QueryBuilder(
+//     Payment.find({ status: 'succeeded' }).populate({
+//       path: 'user',
+//       select: 'name email',
+//     }),
+//     query
+//   )
+//     // .search(brandSearchAbleFields)
+//     .filter()
+//     .sort()
+//     .paginate()
+//     .fields();
+//   const result = await paymentBilder.modelQuery;
+//   return result;
+// };
+
 const getAllPayments = async (query: Record<string, unknown>) => {
-  const paymentBilder = new QueryBuilder(
-    Payment.find({ status: 'succeeded' }).populate({
+  const {
+    searchTerm,
+    page,
+    limit,
+    sortBy = 'createdAt',
+    order = 'desc',
+    ...filterData
+  } = query;
+  const anyConditions: any[] = [];
+
+  if (searchTerm) {
+    anyConditions.push({
+      $or: [
+        { name: { $regex: searchTerm, $options: 'i' } },
+        { description: { $regex: searchTerm, $options: 'i' } },
+      ],
+    });
+  }
+
+  if (Object.keys(filterData).length > 0) {
+    const filterConditions = Object.entries(filterData).map(
+      ([field, value]) => ({
+        [field]: value,
+      })
+    );
+    anyConditions.push({ $and: filterConditions });
+  }
+
+  // Apply filter conditions
+  const whereConditions =
+    anyConditions.length > 0 ? { $and: anyConditions } : {};
+  const pages = parseInt(page as string) || 1;
+  const size = parseInt(limit as string) || 10;
+  const skip = (pages - 1) * size;
+
+  // Set default sort order to show new data first
+  const sortOrder: SortOrder = order === 'desc' ? -1 : 1;
+  const sortCondition: { [key: string]: SortOrder } = {
+    [sortBy as string]: sortOrder,
+  };
+
+  const result = await Payment.find(whereConditions)
+    .populate({
       path: 'user',
-      select: 'name email',
-    }),
-    query
-  )
-    // .search(brandSearchAbleFields)
-    .filter()
-    .sort()
-    .paginate()
-    .fields();
-  const result = await paymentBilder.modelQuery;
-  return result;
+      select: 'name',
+    })
+    .populate({
+      path: 'products.productId',
+      select: 'name image price',
+    })
+    .select('amount products createdAt')
+    .sort(sortCondition)
+    .skip(skip)
+    .limit(size);
+
+  const count = await Payment.countDocuments(whereConditions);
+
+  const data: any = {
+    result,
+    meta: {
+      page: pages,
+      limit: size,
+      total: count,
+      totalPages: Math.ceil(count / size),
+      currentPage: pages,
+    },
+  };
+  return data;
 };
 
 const getAllUserPayments = async (userId: Types.ObjectId) => {

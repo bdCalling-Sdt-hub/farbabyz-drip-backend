@@ -47,6 +47,8 @@ const getAllProducts = async (query: Record<string, unknown>) => {
     }
   }
 
+  anyConditions.push({ status: 'active' });
+
   if (colors) {
     const coloursIds = await Colour.find({
       $or: [{ colourName: { $regex: colors, $options: 'i' } }],
@@ -225,7 +227,8 @@ const bestSellingProducts = async () => {
 const getSingleProduct = async (id: string) => {
   const result = await Product.findById(id)
     .populate('category', 'name')
-    .populate('size', 'sizeName');
+    .populate('size', 'sizeName')
+    .populate('colour', 'colourName');
   return result;
 };
 
@@ -233,9 +236,8 @@ const similarProducts = async (category: string) => {
   const result = await Product.find({ category: category })
     .populate('category', 'name')
     .populate('size', 'sizeName')
-    .limit(10);
 
-  console.log(result);
+    .limit(10);
 
   return result;
 };

@@ -7,7 +7,9 @@ const createCategoryToDB = async (payload: Partial<ICategory>) => {
 };
 
 const getAllCategory = async () => {
-  const result = await Category.find();
+  const result = await Category.find({ status: 'active' }).sort({
+    createdAt: -1,
+  });
   return result;
 };
 

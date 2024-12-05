@@ -6,8 +6,9 @@ import { SortOrder } from 'mongoose';
 
 const totalStatistics = async () => {
   const [totalEarnings, totalUsers, totalProducts] = await Promise.all([
+    // Total earnings with status 'succeeded'
     Payment.aggregate([
-      // { $match: { status: 'active' } },
+      { $match: { status: 'succeeded' } },
       {
         $group: {
           _id: null,
@@ -16,9 +17,11 @@ const totalStatistics = async () => {
       },
     ]).then(result => (result.length > 0 ? result[0].totalAmount : 0)),
 
-    User.countDocuments(),
+    // Total active users
+    User.countDocuments({ status: 'active' }),
 
-    Product.countDocuments(),
+    // Total active products
+    Product.countDocuments({ status: 'active' }),
   ]);
 
   return {
@@ -200,7 +203,7 @@ const getEarningChartData = async (query: Record<string, unknown>) => {
   // Filter by year (if provided)
   if (year) {
     anyConditions.push({
-      'earnings.year': year, // Filter by the year
+      year: year, // Match by year at the top level
     });
   }
 
@@ -236,11 +239,14 @@ const getEarningChartData = async (query: Record<string, unknown>) => {
     matchConditions['$and'] = anyConditions;
   }
 
+  // Log match conditions for debugging
+  console.log('Match conditions:', matchConditions);
+
   const result = await Payment.aggregate([
     { $match: matchConditions }, // Match the conditions
     {
       $group: {
-        _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } }, // Group by date
+        _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
         totalAmount: { $sum: '$amount' }, // Sum the totalAmount
       },
     },
@@ -277,7 +283,7 @@ const getEarningChartData = async (query: Record<string, unknown>) => {
           $push: {
             month: '$month',
             totalAmount: '$totalAmount',
-            year: '$year', // Include the year in the earnings
+            year: '$year',
           },
         },
       },
@@ -312,7 +318,7 @@ const getEarningChartData = async (query: Record<string, unknown>) => {
                 in: {
                   month: '$$month',
                   totalAmount: { $ifNull: ['$$monthData.totalAmount', 0] },
-                  year: '$$monthData.year', // Include year in the result
+                  year: '$$monthData.year',
                 },
               },
             },
@@ -321,6 +327,8 @@ const getEarningChartData = async (query: Record<string, unknown>) => {
       },
     },
   ]);
+
+  console.log('Aggregated result:', result); // Log the result for debugging
 
   return result;
 };

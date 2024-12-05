@@ -63,10 +63,11 @@ const updateBlog = catchAsync(async (req: Request, res: Response) => {
   };
 
   const result = await BlogService.updateBlog(req.params.id, value);
+
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
-    message: 'Blog updated successfully',
+    message: 'Blog updated successfully!!!',
     data: result,
   });
 });

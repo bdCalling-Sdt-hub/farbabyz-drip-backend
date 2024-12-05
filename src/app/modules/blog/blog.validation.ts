@@ -7,7 +7,7 @@ const createBlogsSchema = z.object({
 
 const updateBlogsSchema = z.object({
   title: z.string().optional(),
-  dec: z.string().optional(),
+  des: z.string().optional(),
 });
 
 export const BlogsValidation = {

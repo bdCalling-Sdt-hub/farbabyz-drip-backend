@@ -7,7 +7,7 @@ const createTermsAndCondition = catchAsync(async (req, res) => {
   res.status(200).json({
     success: true,
     statusCode: 200,
-    message: 'Terms and condition created successfully',
+    message: 'Terms-and-condition updated successfully',
     data: result,
   });
 });
@@ -17,7 +17,7 @@ const getTermsAndCondition = catchAsync(async (req, res) => {
   res.status(200).json({
     success: true,
     statusCode: 200,
-    message: 'Terms and condition retrived successfully',
+    message: 'Terms-and-condition retrived successfully',
     data: result,
   });
 });
@@ -28,7 +28,7 @@ const createReturnPolicy = catchAsync(async (req, res) => {
   sendResponse(res, {
     success: true,
     statusCode: 200,
-    message: 'Return policy created successfully',
+    message: 'Return-policy updated successfully',
     data: result,
   });
 });

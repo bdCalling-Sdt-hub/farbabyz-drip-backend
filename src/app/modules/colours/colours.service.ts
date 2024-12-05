@@ -9,7 +9,7 @@ const createColourToDB = async (payload: IColours) => {
 };
 
 const getAllColours = async () => {
-  const result = await Colour.find({});
+  const result = await Colour.find().sort({ createdAt: -1 });
   return result;
 };
 
