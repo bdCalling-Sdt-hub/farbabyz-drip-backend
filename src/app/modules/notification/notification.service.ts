@@ -26,59 +26,33 @@ const readNotification = async (user: JwtPayload) => {
   return result;
 };
 
-// const adminNotification = async () => {
-//   const result = await Notification.find({ type: 'ADMIN' });
-//   return result;
-// };
-
 const adminNotification = async (query: Record<string, unknown>) => {
-  const {
-    page,
-    limit,
-    sortBy = 'createdAt',
-    order = 'desc',
-    ...filterData
-  } = query;
-  const anyConditions: any[] = [];
-
-  if (Object.keys(filterData).length > 0) {
-    const filterConditions = Object.entries(filterData).map(
-      ([field, value]) => ({
-        [field]: value,
-      })
-    );
-    anyConditions.push({ $and: filterConditions });
-  }
+  const { page, limit } = query;
 
   // Apply filter conditions
-  const whereConditions =
-    anyConditions.length > 0 ? { $and: anyConditions } : {};
+
   const pages = parseInt(page as string) || 1;
   const size = parseInt(limit as string) || 10;
   const skip = (pages - 1) * size;
 
   // Set default sort order to show new data first
-  const sortOrder: SortOrder = order === 'desc' ? -1 : 1;
-  const sortCondition: { [key: string]: SortOrder } = {
-    [sortBy as string]: sortOrder,
-  };
 
-  const result = await Notification.find(whereConditions)
+  const result = await Notification.find()
 
-    .sort(sortCondition)
+    .sort({ createdAt: -1 })
     .skip(skip)
     .limit(size)
     .lean();
-  const count = await Notification.countDocuments(whereConditions);
+  const total = await Notification.countDocuments();
+  const unread = await Notification.countDocuments({ read: false });
 
   const data: any = {
     result,
     meta: {
       page: pages,
       limit: size,
-      total: count,
-      totalPages: Math.ceil(count / size),
-      currentPage: pages,
+      total,
+      unread,
     },
   };
   return data;
@@ -92,9 +66,15 @@ const adminReadNotification = async () => {
   return result;
 };
 
+const deleteAllNotifications = async () => {
+  const result = await Notification.deleteMany({});
+  return result;
+};
+
 export const NotificationService = {
   getNotificationToDb,
   readNotification,
   adminNotification,
   adminReadNotification,
+  deleteAllNotifications,
 };

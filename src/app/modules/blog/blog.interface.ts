@@ -3,4 +3,6 @@ export type IBlogs = {
   des: string;
   image: string;
   status: 'active' | 'delete';
+  updatedAt?: Date;
+  createdAt?: Date;
 };

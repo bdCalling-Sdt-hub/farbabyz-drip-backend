@@ -29,4 +29,10 @@ router.patch(
   NotificationController.adminReadNotification
 );
 
+router.delete(
+  '/delete-all',
+  auth(USER_ROLES.ADMIN),
+  NotificationController.deleteAllNotifications
+);
+
 export const NotificationRoutes = router;

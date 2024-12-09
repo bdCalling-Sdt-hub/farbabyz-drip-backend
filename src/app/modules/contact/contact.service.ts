@@ -8,8 +8,7 @@ const createContactInfo = async (payload: IContact) => {
   await sendEmail(
     payload.email,
     'Thank you for your message',
-    `
-      <div style="font-family: Arial, sans-serif; font-size: 16px; color: #333;">
+    ` <div style="font-family: Arial, sans-serif; font-size: 16px; color: #333;">
         <p>Dear ${result.name},</p>
         <p><strong>Email:</strong> ${result.email}</p>
         <p>${result.message}</p>

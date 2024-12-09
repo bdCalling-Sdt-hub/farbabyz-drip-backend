@@ -25,7 +25,10 @@ const categorySchema = new Schema<ICategory>(
 categorySchema.pre('save', async function (next) {
   const isExist = await Category.findOne({ name: this.name });
   if (isExist) {
-    throw new ApiError(StatusCodes.BAD_REQUEST, 'Category already exist!');
+    throw new ApiError(
+      StatusCodes.BAD_REQUEST,
+      'Category already exist please change the name!'
+    );
   }
   next();
 });

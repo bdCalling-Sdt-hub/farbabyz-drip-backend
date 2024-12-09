@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 const createProductSchema = z.object({
   name: z.string({ required_error: 'Name is required' }),
-  price: z.string({ required_error: 'Price is required' }),
+  price: z.number({ required_error: 'Price is required' }),
   rating: z.number().optional(),
   category: z.string({ required_error: 'Category is required' }),
   size: z.array(z.string()).nonempty({ message: 'Size is required' }),

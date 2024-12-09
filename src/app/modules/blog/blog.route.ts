@@ -21,16 +21,8 @@ router.post(
   }
 );
 
-router.get(
-  '/',
-  // auth(USER_ROLES.USER, USER_ROLES.ADMIN),
-  BlogController.getAllBlogs
-);
-router.get(
-  '/:id',
-  // auth(USER_ROLES.USER, USER_ROLES.ADMIN),
-  BlogController.getSingleblog
-);
+router.get('/', BlogController.getAllBlogs);
+router.get('/:id', BlogController.getSingleblog);
 
 router.patch(
   '/:id',

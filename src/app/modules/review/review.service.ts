@@ -12,12 +12,17 @@ const createReviewToDB = async (payload: Partial<IReview>) => {
   });
 
   if (isExist) {
-    throw new ApiError(StatusCodes.UNAUTHORIZED, 'Review already exists');
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'Review already exists');
   }
 
   const result = await Review.create(payload);
 
+  if (!result) {
+    return 'Review not created!';
+  }
+
   const reviews = await Review.find({ product: payload.product });
+
   const totalRatings = reviews.reduce(
     (sum, review) => sum + (review.rating || 0),
     0

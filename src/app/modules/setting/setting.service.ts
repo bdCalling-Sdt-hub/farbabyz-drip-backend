@@ -1,3 +1,5 @@
+import { StatusCodes } from 'http-status-codes';
+import ApiError from '../../../errors/ApiError';
 import { IRetrun, ITerms } from './setting.interface';
 import { Return, TermsAndCondition } from './setting.model';
 
@@ -14,12 +16,18 @@ const createTermsAndCondition = async (payload: Partial<ITerms>) => {
       return newTerm;
     }
   } catch (error) {
-    throw new Error('Unable to create or update terms and condition.');
+    throw new ApiError(
+      StatusCodes.BAD_REQUEST,
+      'Unable to create or update terms and condition.'
+    );
   }
 };
 
 const getTermsAndCondition = async () => {
   const term = await TermsAndCondition.findOne();
+  if (!term) {
+    throw new ApiError(StatusCodes.NOT_FOUND, 'Terms and condition not found.');
+  }
   return term;
 };
 
@@ -36,12 +44,20 @@ const createReturnPolicy = async (payload: Partial<IRetrun>) => {
       return newTerm;
     }
   } catch (error) {
-    throw new Error('Unable to create or update Return Policy.');
+    throw new ApiError(
+      StatusCodes.BAD_REQUEST,
+      'Unable to create or update return policy.'
+    );
   }
 };
 
 const getReturnPolicy = async () => {
   const term = await Return.findOne();
+
+  if (!term) {
+    throw new ApiError(StatusCodes.NOT_FOUND, 'Return policy not found.');
+  }
+
   return term;
 };
 

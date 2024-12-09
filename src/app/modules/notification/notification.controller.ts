@@ -54,9 +54,23 @@ const adminReadNotification = catchAsync(
   }
 );
 
+const deleteAllNotifications = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await NotificationService.deleteAllNotifications();
+
+    sendResponse(res, {
+      statusCode: StatusCodes.OK,
+      success: true,
+      message: 'Notification Deleted Successfully',
+      data: result,
+    });
+  }
+);
+
 export const NotificationController = {
   getNotificationToDb,
   adminNotificationFromDB,
   readNotification,
   adminReadNotification,
+  deleteAllNotifications,
 };

@@ -2,7 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 import ApiError from '../../../errors/ApiError';
 import { Category } from '../category/category.model';
 import { Payment } from '../payment/payment.model';
-import { User } from '../user/user.model';
+
 import { IProduct, UpdateProductsPayload } from './product.interface';
 import { Product } from './product.model';
 import { SortOrder, model } from 'mongoose';
@@ -16,6 +16,11 @@ const createProductIntoDb = async (payload: Partial<IProduct>) => {
   }
 
   const result = await Product.create(payload);
+
+  if (!result) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'Product not created!');
+  }
+
   return result;
 };
 
@@ -28,10 +33,10 @@ const getAllProducts = async (query: Record<string, unknown>) => {
     page,
     sizes,
     limit,
-    sortBy,
-    order,
     newProduct,
     bestSellingProduct,
+    sortBy = 'createdAt',
+    order = 'desc',
     ...filterData
   } = query;
   const anyConditions: any[] = [];
@@ -86,7 +91,7 @@ const getAllProducts = async (query: Record<string, unknown>) => {
   }
 
   if (bestSellingProduct) {
-    const ratingValue = parseInt(bestSellingProduct as string, 10); // Ensure it's a number
+    const ratingValue = parseInt(bestSellingProduct as string, 10);
 
     if (!isNaN(ratingValue)) {
       anyConditions.push({
@@ -136,8 +141,7 @@ const getAllProducts = async (query: Record<string, unknown>) => {
     .sort(sortCondition)
     .skip(skip)
     .limit(size);
-  // .lean();
-  // .exec();
+
   const count = await Product.countDocuments(whereConditions);
 
   const data: any = {
@@ -151,77 +155,6 @@ const getAllProducts = async (query: Record<string, unknown>) => {
     },
   };
   return data;
-};
-
-const hello = async (query: Record<string, unknown>) => {
-  const {
-    searchTerm,
-    page,
-    limit,
-    sortBy = 'createdAt',
-    order = 'desc',
-    ...filterData
-  } = query;
-  const anyConditions: any[] = [];
-
-  if (searchTerm) {
-    anyConditions.push({
-      $or: [
-        { name: { $regex: searchTerm, $options: 'i' } },
-        { description: { $regex: searchTerm, $options: 'i' } },
-      ],
-    });
-  }
-
-  if (Object.keys(filterData).length > 0) {
-    const filterConditions = Object.entries(filterData).map(
-      ([field, value]) => ({
-        [field]: value,
-      })
-    );
-    anyConditions.push({ $and: filterConditions });
-  }
-
-  // Apply filter conditions
-  const whereConditions =
-    anyConditions.length > 0 ? { $and: anyConditions } : {};
-  const pages = parseInt(page as string) || 1;
-  const size = parseInt(limit as string) || 10;
-  const skip = (pages - 1) * size;
-
-  // Set default sort order to show new data first
-  const sortOrder: SortOrder = order === 'desc' ? -1 : 1;
-  const sortCondition: { [key: string]: SortOrder } = {
-    [sortBy as string]: sortOrder,
-  };
-
-  const result = await Product.find(whereConditions)
-    .populate('category', 'name')
-    .sort(sortCondition)
-    .skip(skip)
-    .limit(size)
-    .lean();
-  const count = await Product.countDocuments(whereConditions);
-
-  const data: any = {
-    result,
-    meta: {
-      page: pages,
-      limit: size,
-      total: count,
-      totalPages: Math.ceil(count / size),
-      currentPage: pages,
-    },
-  };
-  return data;
-};
-
-const bestSellingProducts = async () => {
-  const result = await Product.find({ rating: { $gte: 4 } })
-    .sort({ sold: -1 })
-    .limit(10)
-    .populate('category', 'name');
-  return result;
 };
 
 const getSingleProduct = async (id: string) => {
@@ -234,9 +167,9 @@ const getSingleProduct = async (id: string) => {
 
 const similarProducts = async (category: string) => {
   const result = await Product.find({ category: category })
+    .sort({ createdAt: -1 })
     .populate('category', 'name')
     .populate('size', 'sizeName')
-
     .limit(10);
 
   return result;
@@ -245,16 +178,15 @@ const similarProducts = async (category: string) => {
 const updateProduct = async (id: string, payload: UpdateProductsPayload) => {
   const isExistProducts = await Product.findById(id);
 
-  // Check if the product exists
   if (!isExistProducts) {
     throw new ApiError(StatusCodes.NOT_FOUND, "Product doesn't exist!");
   }
 
   if (payload.imagesToDelete && payload.imagesToDelete.length > 0) {
     for (let image of payload.imagesToDelete) {
-      unlinkFile(image); // Ensure unlinkFile handles errors gracefully
+      unlinkFile(image);
     }
-    // Remove deleted images from the existing image array
+
     isExistProducts.image = isExistProducts.image.filter(
       (img: string) => !payload.imagesToDelete!.includes(img)
     );
@@ -278,6 +210,11 @@ const updateProduct = async (id: string, payload: UpdateProductsPayload) => {
 };
 const deleteProduct = async (id: string) => {
   const result = await Product.findByIdAndUpdate(id, { status: 'delete' });
+
+  if (!result) {
+    throw new ApiError(StatusCodes.NOT_FOUND, "Product doesn't exist!");
+  }
+
   return result;
 };
 
@@ -287,6 +224,5 @@ export const ProductService = {
   getSingleProduct,
   updateProduct,
   deleteProduct,
-  bestSellingProducts,
   similarProducts,
 };

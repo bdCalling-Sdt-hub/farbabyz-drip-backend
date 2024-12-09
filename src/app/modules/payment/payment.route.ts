@@ -31,10 +31,4 @@ router.post(
   PaymentController.createCheckoutSessionController
 );
 
-// router.post(
-//   '/webhook',
-//   express.raw({ type: 'application/json' }), // Use raw body parsing
-//   PaymentController.stripeWebhookController
-// );
-
 export const PaymentRoutes = router;

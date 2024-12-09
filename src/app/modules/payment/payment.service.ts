@@ -15,65 +15,8 @@ export const stripe = new Stripe(config.payment.stripe_secret_key as string, {
   apiVersion: '2024-09-30.acacia',
 });
 
-// const makePaymentIntent = async (payload: IPayment) => {
-//   const { user, products, code } = payload;
-
-//   // Calculate the total amount based on products and their quantities
-//   let totalAmount = 0;
-//   for (const item of products) {
-//     const product = await Product.findById(item.productId);
-//     if (!product)
-//       throw new ApiError(StatusCodes.NOT_FOUND, 'Product not found');
-
-//     totalAmount += product.price * item.quantity;
-//   }
-
-//   // Apply a 15% discount if a code is provided
-//   const discount = code ? 0.15 : 0;
-//   const discountedAmount = totalAmount * (1 - discount);
-//   const amountInCents = Math.trunc(discountedAmount * 100);
-
-//   const amountInCent = Math.trunc(totalAmount * 100);
-
-//   const paymentIntent = await stripe.paymentIntents.create({
-//     amount: amountInCent,
-//     currency: 'usd',
-//     payment_method_types: ['card'],
-//   });
-
-//   const values = {
-//     ...payload,
-//     amount: totalAmount, // Keep the original total amount
-//     transactionId: paymentIntent.id,
-//   };
-
-//   // Create the payment document
-//   const createPayment = await Payment.create(values);
-
-//   if (!createPayment) {
-//     throw new ApiError(StatusCodes.BAD_REQUEST, 'Payment failed');
-//   }
-
-//   const isUser = await User.findById(user);
-
-//   if (paymentIntent) {
-//     const data = {
-//       text: `You have received $${totalAmount} from ${isUser?.name}`,
-//       receiver: payload.user,
-//       type: 'ADMIN',
-//     };
-
-//     await sendNotifications(data);
-//   }
-
-//   return {
-//     client_secret: paymentIntent.client_secret,
-//     transactionId: paymentIntent.id,
-//   };
-// };
-
 const makePaymentIntent = async (payload: IPayment) => {
-  const { user, products, code } = payload;
+  const { products, code } = payload;
 
   // Calculate the total amount based on products and their quantities
   let totalAmount = 0;
@@ -121,69 +64,6 @@ const makePaymentIntent = async (payload: IPayment) => {
   };
 };
 
-// const makePaymentIntent = async (payload: IPayment) => {
-//   const { user, products, code } = payload;
-
-//   try {
-//     // Calculate the total amount based on products and their quantities
-//     let totalAmount = 0;
-//     for (const item of products) {
-//       const product = await Product.findById(item.productId);
-//       if (!product)
-//         throw new ApiError(StatusCodes.NOT_FOUND, 'Product not found');
-
-//       totalAmount += product.price * item.quantity;
-//     }
-
-//     // Apply a 15% discount if a code is provided
-//     const discount = code ? 0.15 : 0;
-//     const discountedAmount = totalAmount * (1 - discount);
-//     const amountInCents = Math.trunc(discountedAmount * 100); // Total after discount
-
-//     const amountInCent = Math.trunc(totalAmount * 100); // Full amount before discount
-
-//     // Create the payment intent with Stripe
-//     const paymentIntent = await stripe.paymentIntents.create({
-//       amount: amountInCent, // Full amount in cents
-//       currency: 'usd', // Assuming USD
-//       payment_method_types: ['card'],
-//     });
-
-//     // Return the client secret and transaction ID for front-end usage
-//     return {
-//       client_secret: paymentIntent.client_secret,
-//       transactionId: paymentIntent.id,
-//     };
-//   } catch (error) {
-//     console.error('Error during payment intent creation or saving:', error);
-//     throw new ApiError(
-//       StatusCodes.INTERNAL_SERVER_ERROR,
-//       'Payment intent creation failed'
-//     );
-//   }
-// };
-
-// const paymentConfirmation = async (payload: IPayment) => {
-//   const createPayment = await Payment.create(payload);
-//   if (!createPayment) {
-//     throw new ApiError(StatusCodes.BAD_REQUEST, 'Payment failed');
-//   }
-
-//   const isUser = await User.findById(createPayment.user);
-
-//   if (createPayment.status === 'succeeded') {
-//     const data = {
-//       text: `You have received $${createPayment?.amount} from ${isUser?.name}`,
-//       receiver: createPayment.user,
-//       type: 'ADMIN',
-//     };
-
-//     await sendNotifications(data);
-//   }
-
-//   return createPayment;
-// };
-
 const paymentConfirmation = async (payload: IPayment) => {
   const updatePayment = await Payment.findOneAndUpdate(
     { client_secret: payload.client_secret }, // Ensure this is correct
@@ -198,69 +78,41 @@ const paymentConfirmation = async (payload: IPayment) => {
     );
   }
 
+  // console.log(updatePayment);
+
+  let totalAmount = 0;
+  for (const item of updatePayment.products) {
+    const product = await Product.findById(item.productId);
+    if (!product)
+      throw new ApiError(StatusCodes.NOT_FOUND, 'Product not found');
+
+    totalAmount += product.price * item.quantity;
+  }
+
+  const isUser = await User.findById(updatePayment?.user);
+
+  if (updatePayment.status === 'succeeded') {
+    const data = {
+      text: `You have received $${totalAmount} from ${isUser?.name}`,
+      type: 'ADMIN',
+    };
+
+    await sendNotifications(data);
+  }
+
   return updatePayment;
 };
 
-// const getAllPayments = async (query: Record<string, unknown>) => {
-//   const paymentBilder = new QueryBuilder(
-//     Payment.find({ status: 'succeeded' }).populate({
-//       path: 'user',
-//       select: 'name email',
-//     }),
-//     query
-//   )
-//     // .search(brandSearchAbleFields)
-//     .filter()
-//     .sort()
-//     .paginate()
-//     .fields();
-//   const result = await paymentBilder.modelQuery;
-//   return result;
-// };
-
 const getAllPayments = async (query: Record<string, unknown>) => {
-  const {
-    searchTerm,
-    page,
-    limit,
-    sortBy = 'createdAt',
-    order = 'desc',
-    ...filterData
-  } = query;
-  const anyConditions: any[] = [];
-
-  if (searchTerm) {
-    anyConditions.push({
-      $or: [
-        { name: { $regex: searchTerm, $options: 'i' } },
-        { description: { $regex: searchTerm, $options: 'i' } },
-      ],
-    });
-  }
-
-  if (Object.keys(filterData).length > 0) {
-    const filterConditions = Object.entries(filterData).map(
-      ([field, value]) => ({
-        [field]: value,
-      })
-    );
-    anyConditions.push({ $and: filterConditions });
-  }
+  const { page, limit } = query;
 
   // Apply filter conditions
-  const whereConditions =
-    anyConditions.length > 0 ? { $and: anyConditions } : {};
   const pages = parseInt(page as string) || 1;
   const size = parseInt(limit as string) || 10;
   const skip = (pages - 1) * size;
 
   // Set default sort order to show new data first
-  const sortOrder: SortOrder = order === 'desc' ? -1 : 1;
-  const sortCondition: { [key: string]: SortOrder } = {
-    [sortBy as string]: sortOrder,
-  };
-
-  const result = await Payment.find(whereConditions)
+  const result = await Payment.find({ status: 'succeeded' })
     .populate({
       path: 'user',
       select: 'name',
@@ -270,11 +122,11 @@ const getAllPayments = async (query: Record<string, unknown>) => {
       select: 'name image price',
     })
     .select('amount products createdAt')
-    .sort(sortCondition)
+    .sort({ createdAt: -1 })
     .skip(skip)
     .limit(size);
 
-  const count = await Payment.countDocuments(whereConditions);
+  const count = await Payment.countDocuments({ status: 'succeeded' });
 
   const data: any = {
     result,

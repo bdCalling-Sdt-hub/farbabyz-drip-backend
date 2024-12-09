@@ -57,7 +57,6 @@ const getSingleProduct = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updatedProductIntoDb = catchAsync(async (req: Request, res: Response) => {
-  //   let image = getFilePath(req.files, 'image');
   const PrId = req.params.id;
   const value = {
     ...req.body,
@@ -76,7 +75,7 @@ const updatedProductIntoDb = catchAsync(async (req: Request, res: Response) => {
   }
 
   const result = await ProductService.updateProduct(PrId, value);
-
+  console.log(result, 'result');
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
@@ -91,15 +90,6 @@ const deleteProduct = catchAsync(async (req: Request, res: Response) => {
     success: true,
     statusCode: StatusCodes.OK,
     message: 'Products deleted successfully',
-    data: result,
-  });
-});
-const bestSellingProducts = catchAsync(async (req: Request, res: Response) => {
-  const result = await ProductService.bestSellingProducts();
-  sendResponse(res, {
-    success: true,
-    statusCode: StatusCodes.OK,
-    message: 'Best-selling Products retrived successfully',
     data: result,
   });
 });
@@ -120,6 +110,5 @@ export const ProductController = {
   getSingleProduct,
   updatedProductIntoDb,
   deleteProduct,
-  bestSellingProducts,
   similarProducts,
 };

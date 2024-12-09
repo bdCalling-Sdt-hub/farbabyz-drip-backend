@@ -1,79 +1,81 @@
 import { StatusCodes } from 'http-status-codes';
 import ApiError from '../../../errors/ApiError';
-
-import QueryBuilder from '../../builder/QueryBuilder';
 import { IFaq } from './faq.interface';
 import { Faq } from './faq.model';
-import { faqSearchAbleFields } from './faq.constant';
 import { SortOrder } from 'mongoose';
 
 const createFaqToDB = async (payload: Partial<IFaq>) => {
   const result = await Faq.create(payload);
+
+  if (!result) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'Faq not created!');
+  }
   return result;
 };
 
 const getAllFaq = async (query: Record<string, unknown>) => {
   const {
     searchTerm,
-    page,
-    limit,
+    page = 1,
+    limit = 10,
     sortBy = 'createdAt',
     order = 'desc',
     ...filterData
   } = query;
-  const anyConditions: any[] = [];
+
+  // Build search conditions
+  const conditions: Record<string, unknown> = {};
 
   if (searchTerm) {
-    anyConditions.push({
-      $or: [
-        { name: { $regex: searchTerm, $options: 'i' } },
-        { description: { $regex: searchTerm, $options: 'i' } },
-      ],
-    });
+    conditions.$or = [
+      { answer: { $regex: searchTerm, $options: 'i' } },
+      { question: { $regex: searchTerm, $options: 'i' } },
+    ];
   }
 
   if (Object.keys(filterData).length > 0) {
-    const filterConditions = Object.entries(filterData).map(
-      ([field, value]) => ({
-        [field]: value,
-      })
-    );
-    anyConditions.push({ $and: filterConditions });
+    conditions.$and = Object.entries(filterData).map(([field, value]) => ({
+      [field]: value,
+    }));
   }
 
-  // Apply filter conditions
-  const whereConditions =
-    anyConditions.length > 0 ? { $and: anyConditions } : {};
-  const pages = parseInt(page as string) || 1;
-  const size = parseInt(limit as string) || 10;
-  const skip = (pages - 1) * size;
+  // Pagination setup
+  const pageNumber = Math.max(1, parseInt(page as string, 10));
+  const pageSize = Math.max(1, parseInt(limit as string, 10));
+  const skip = (pageNumber - 1) * pageSize;
 
-  // Set default sort order to show new data first
-  const sortOrder: SortOrder = order === 'desc' ? -1 : 1;
+  // Sorting setup
+  const sortOrder = order === 'desc' ? -1 : 1;
+
   const sortCondition: { [key: string]: SortOrder } = {
     [sortBy as string]: sortOrder,
   };
 
-  const result = await Faq.find(whereConditions)
-    .sort(sortCondition)
-    .skip(skip)
-    .limit(size);
-  const count = await Faq.countDocuments(whereConditions);
+  // Query database
+  const [result, count] = await Promise.all([
+    Faq.find(conditions).sort(sortCondition).skip(skip).limit(pageSize),
+    Faq.countDocuments(conditions),
+  ]);
 
-  const data: any = {
+  // Prepare response
+  return {
     result,
     meta: {
-      page: pages,
-      limit: size,
+      page: pageNumber,
+      limit: pageSize,
       total: count,
-      totalPages: Math.ceil(count / size),
-      currentPage: pages,
+      totalPages: Math.ceil(count / pageSize),
     },
   };
-  return data;
 };
+
 const getSingleFaq = async (id: string) => {
   const result = await Faq.findById(id);
+
+  if (!result) {
+    throw new ApiError(StatusCodes.NOT_FOUND, 'Faq not found!');
+  }
+
   return result;
 };
 
@@ -82,11 +84,21 @@ const updateFaq = async (id: string, payload: Partial<IFaq>) => {
     new: true,
     runValidators: true,
   });
+
+  if (!result) {
+    throw new ApiError(StatusCodes.NOT_FOUND, 'Faq not found!');
+  }
+
   return result;
 };
 
 const deleteFaq = async (id: string) => {
   const result = await Faq.findByIdAndDelete(id);
+
+  if (!result) {
+    throw new ApiError(StatusCodes.NOT_FOUND, 'Faq not found!');
+  }
+
   return result;
 };
 

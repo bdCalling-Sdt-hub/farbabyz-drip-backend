@@ -18,6 +18,8 @@ export type IUser = {
     oneTimeCode: number;
     expireAt: Date;
   };
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 export type UserModal = {

@@ -18,18 +18,6 @@ const createBlogsToDB = async (payload: Partial<IBlogs>) => {
   return result;
 };
 
-// const getAllBlogs = async (query: Record<string, unknown>) => {
-//   const blogBuilder = new QueryBuilder(Blog.find(), query)
-//     .search(blogSearchAbleFields)
-//     .filter()
-//     .sort()
-//     .paginate()
-//     .fields();
-
-//   const result = await blogBuilder.modelQuery;
-//   return result;
-// };
-
 const getAllBlogs = async (query: Record<string, unknown>) => {
   const {
     searchTerm,
@@ -44,8 +32,8 @@ const getAllBlogs = async (query: Record<string, unknown>) => {
   if (searchTerm) {
     anyConditions.push({
       $or: [
-        { name: { $regex: searchTerm, $options: 'i' } },
-        { description: { $regex: searchTerm, $options: 'i' } },
+        { title: { $regex: searchTerm, $options: 'i' } },
+        { des: { $regex: searchTerm, $options: 'i' } },
       ],
     });
   }
@@ -93,6 +81,11 @@ const getAllBlogs = async (query: Record<string, unknown>) => {
 
 const getSingleblog = async (id: string) => {
   const result = await Blog.findById(id);
+
+  if (!result) {
+    throw new ApiError(StatusCodes.NOT_FOUND, 'Blog not found');
+  }
+
   return result;
 };
 
@@ -101,11 +94,21 @@ const updateBlog = async (id: string, payload: Partial<IBlogs>) => {
     new: true,
     runValidators: true,
   });
+
+  if (!result) {
+    throw new ApiError(StatusCodes.NOT_FOUND, 'Blog not found');
+  }
+
   return result;
 };
 
 const deleteBlog = async (id: string) => {
   const result = await Blog.findByIdAndDelete(id);
+
+  if (!result) {
+    throw new ApiError(StatusCodes.NOT_FOUND, 'Blog not found');
+  }
+
   return result;
 };
 

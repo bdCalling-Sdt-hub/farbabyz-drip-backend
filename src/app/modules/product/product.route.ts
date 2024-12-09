@@ -21,50 +21,11 @@ router.post(
   }
 );
 
-router.get(
-  '/',
-  // auth(USER_ROLES.USER, USER_ROLES.ADMIN),
-  ProductController.getAllProducts
-);
+router.get('/', ProductController.getAllProducts);
 
-router.get(
-  '/get-best-selling',
-  // auth(USER_ROLES.USER, USER_ROLES.ADMIN),
-  ProductController.bestSellingProducts
-);
-router.get(
-  '/get-similar-products/:id',
-  // auth(USER_ROLES.USER, USER_ROLES.ADMIN),
-  ProductController.similarProducts
-);
+router.get('/get-similar-products/:id', ProductController.similarProducts);
 
-router.get(
-  '/:id',
-  // auth(USER_ROLES.USER, USER_ROLES.ADMIN),
-  ProductController.getSingleProduct
-);
-
-// router.patch(
-//   '/:id',
-//   fileUploadHandler(),
-//   auth(USER_ROLES.ADMIN),
-//   (req: Request, res: Response, next: NextFunction) => {
-//     try {
-//       // Check if a file is uploaded and parse the data from the request body
-//       const parsedData = JSON.parse(req.body.data || '{}');
-//       req.body = ProductValidation.updateProductSchema.parse(parsedData);
-
-//       // If a file is uploaded, include its reference in the update payload
-//       if (req.file) {
-//         req.body.image = req.file.path; // Assuming `fileUploadHandler` stores the file path in `req.file.path`
-//       }
-
-//       return ProductController.updatedProductIntoDb(req, res, next);
-//     } catch (error) {
-//       next(error); // Forward the error to the error handling middleware
-//     }
-//   }
-// );
+router.get('/:id', ProductController.getSingleProduct);
 
 router.patch(
   '/:id',
