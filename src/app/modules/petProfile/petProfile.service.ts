@@ -3,6 +3,7 @@ import ApiError from '../../../errors/ApiError';
 import { User } from '../user/user.model';
 import { IPetProfile } from './petProfile.intertface';
 import { PetProfile } from './petProfile.model';
+import unlinkFile from '../../../shared/unlinkFile';
 
 const createPetProfileIntoDb = async (payload: IPetProfile) => {
   const isExistUser = await User.findById(payload.user);
@@ -37,6 +38,15 @@ const getAllPetProfile = async (userId: string) => {
 };
 
 const updatePetProfile = async (id: string, payload: IPetProfile) => {
+  const isExistProfile = await PetProfile.findById(id);
+
+  if (!isExistProfile) {
+    throw new ApiError(StatusCodes.NOT_FOUND, 'pet-profile not found');
+  }
+
+  if (payload.image && isExistProfile.image) {
+    unlinkFile(isExistProfile.image);
+  }
   const result = await PetProfile.findByIdAndUpdate(id, payload, {
     new: true,
   });

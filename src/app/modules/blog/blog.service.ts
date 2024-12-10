@@ -2,9 +2,8 @@ import { StatusCodes } from 'http-status-codes';
 import ApiError from '../../../errors/ApiError';
 import { IBlogs } from './blog.interface';
 import { Blog } from './blog.model';
-import QueryBuilder from '../../builder/QueryBuilder';
-import { blogSearchAbleFields } from './faq.constant';
 import { SortOrder } from 'mongoose';
+import unlinkFile from '../../../shared/unlinkFile';
 
 const createBlogsToDB = async (payload: Partial<IBlogs>) => {
   const isExistBlog = await Blog.findOne({
@@ -90,6 +89,16 @@ const getSingleblog = async (id: string) => {
 };
 
 const updateBlog = async (id: string, payload: Partial<IBlogs>) => {
+  const isExistBlog = await Blog.findById(id);
+
+  if (!isExistBlog) {
+    throw new ApiError(StatusCodes.NOT_FOUND, 'Blog not found');
+  }
+
+  if (payload.image && isExistBlog.image) {
+    unlinkFile(isExistBlog.image);
+  }
+
   const result = await Blog.findByIdAndUpdate(id, payload, {
     new: true,
     runValidators: true,
