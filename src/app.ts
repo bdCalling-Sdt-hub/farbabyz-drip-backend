@@ -4,6 +4,7 @@ import { StatusCodes } from 'http-status-codes';
 import globalErrorHandler from './app/middlewares/globalErrorHandler';
 import router from './routes';
 import { Morgan } from './shared/morgen';
+import { PaymentController } from './app/modules/payment/payment.controller';
 const app = express();
 
 //morgan
@@ -13,7 +14,13 @@ app.use(Morgan.errorHandler);
 //body parser
 app.use(
   cors({
-    origin: ['http://localhost:3000', 'http://192.168.10.19:3030'],
+    origin: [
+      'http://localhost:3000',
+      'http://192.168.10.19:3030',
+      'http://139.59.0.25:4173',
+      'http://139.59.0.25:3000',
+    ],
+    credentials: true,
   })
 );
 app.use(express.json());

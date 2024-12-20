@@ -39,7 +39,10 @@ const userSchema = new Schema<IUser, UserModal>(
       type: String,
       default: '',
     },
-
+    country: {
+      type: String,
+      default: '',
+    },
     status: {
       type: String,
       enum: ['active', 'delete'],
@@ -51,22 +54,8 @@ const userSchema = new Schema<IUser, UserModal>(
     },
     image: {
       type: String,
-    },
-
-    accountInformation: {
-      status: {
-        type: Boolean,
-        default: false,
-      },
-      stripeAccountId: {
-        type: String,
-      },
-      externalAccountId: {
-        type: String,
-      },
-      currency: {
-        type: String,
-      },
+      default:
+        'https://www.shutterstock.com/shutterstock/photos/1153673752/display_1500/stock-vector-profile-placeholder-image-gray-silhouette-no-photo-1153673752.jpg',
     },
     authentication: {
       type: {

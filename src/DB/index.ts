@@ -5,14 +5,15 @@ import { USER_ROLES } from '../enums/user';
 import { logger } from '../shared/logger';
 
 const superUser = {
-  name: 'Admin',
+  name: 'Tiffany',
   role: USER_ROLES.ADMIN,
-  email: 'admin@gmail.com',
-  password: 'sdfdsf4545',
+  email: config.admin.email,
+  password: config.admin.password,
+  image: '',
   verified: true,
 };
 
-const seedSuperAdmin = async () => {
+const seedAdmin = async () => {
   const isExistSuperAdmin = await User.findOne({
     role: USER_ROLES.ADMIN,
   });
@@ -23,4 +24,4 @@ const seedSuperAdmin = async () => {
   }
 };
 
-export default seedSuperAdmin;
+export default seedAdmin;

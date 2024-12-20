@@ -16,6 +16,10 @@ export default {
     jwtRefreshSecret: process.env.JWT_REFRESH_SECRET,
     jwtRefreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
   },
+  payment: {
+    stripe_secret_key: process.env.STRIPE_SECRET_KEY,
+    stripe_webhook_secret: process.env.STRIPE_WEBHOOK_SECRET,
+  },
   email: {
     from: process.env.EMAIL_FROM,
     user: process.env.EMAIL_USER,
@@ -23,8 +27,8 @@ export default {
     host: process.env.EMAIL_HOST,
     pass: process.env.EMAIL_PASS,
   },
-  super_admin: {
-    email: process.env.DMIN_EMAIL,
+  admin: {
+    email: process.env.ADMIN_EMAIL,
     password: process.env.ADMIN_PASSWORD,
   },
 };

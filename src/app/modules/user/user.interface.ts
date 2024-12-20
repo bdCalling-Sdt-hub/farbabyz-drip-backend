@@ -9,6 +9,7 @@ export type IUser = {
   password: string;
   postCode: string;
   address?: string;
+  country?: string;
   status: 'active' | 'delete';
   verified: boolean;
   image: string;
@@ -17,12 +18,8 @@ export type IUser = {
     oneTimeCode: number;
     expireAt: Date;
   };
-  accountInformation?: {
-    status: boolean;
-    stripeAccountId: string;
-    externalAccountId: string;
-    currency: string;
-  };
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 export type UserModal = {

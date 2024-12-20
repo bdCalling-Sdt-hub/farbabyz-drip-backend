@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes';
 import catchAsync from '../../../shared/catchAsync';
 import sendResponse from '../../../shared/sendResponse';
 import { AuthService } from './auth.service';
+import config from '../../../config';
 
 const verifyEmail = catchAsync(async (req: Request, res: Response) => {
   const { ...verifyData } = req.body;
@@ -20,11 +21,16 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
   const { ...loginData } = req.body;
   const result = await AuthService.loginUserFromDB(loginData);
 
+  res.cookie('refreshToken', result.refreshToken, {
+    secure: config.node_env === 'production',
+    httpOnly: true,
+  });
+
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
     message: 'User login successfully',
-    data: result
+    data: result,
   });
 });
 
@@ -67,39 +73,41 @@ const changePassword = catchAsync(async (req: Request, res: Response) => {
 
 const deleteAccount = catchAsync(async (req: Request, res: Response) => {
   const user = req.user;
-  const result  = await AuthService.deleteAccountToDB(user);
+  const result = await AuthService.deleteAccountToDB(user);
 
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
     message: 'Account Deleted successfully',
-    data: result
+    data: result,
   });
 });
 
 const newAccessToken = catchAsync(async (req: Request, res: Response) => {
-  const {token} = req.body;
-  const result  = await AuthService.newAccessTokenToUser(token);
+  const { token } = req.body;
+  const result = await AuthService.newAccessTokenToUser(token);
 
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
     message: 'Generate Access Token successfully',
-    data: result
+    data: result,
   });
 });
 
-const resendVerificationEmail = catchAsync(async (req: Request, res: Response) => {
-  const {email} = req.body;
-  const result  = await AuthService.resendVerificationEmailToDB(email);
+const resendVerificationEmail = catchAsync(
+  async (req: Request, res: Response) => {
+    const { email } = req.body;
+    const result = await AuthService.resendVerificationEmailToDB(email);
 
-  sendResponse(res, {
-    success: true,
-    statusCode: StatusCodes.OK,
-    message: 'Generate OTP and send successfully',
-    data: result
-  });
-});
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: 'Generate OTP and send successfully',
+      data: result,
+    });
+  }
+);
 
 export const AuthController = {
   verifyEmail,
@@ -109,5 +117,5 @@ export const AuthController = {
   changePassword,
   deleteAccount,
   newAccessToken,
-  resendVerificationEmail
+  resendVerificationEmail,
 };
