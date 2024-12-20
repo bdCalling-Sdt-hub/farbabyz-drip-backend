@@ -15,10 +15,10 @@ app.use(Morgan.errorHandler);
 app.use(
   cors({
     origin: [
-      // 'http://localhost:3000',
-      // 'http://192.168.10.19:3030',
-      // 'http://139.59.0.25:4173',
-      // 'http://139.59.0.25:3000',
+      'http://localhost:3000',
+      'http://192.168.10.19:3030',
+      'http://139.59.0.25:4173',
+      'http://139.59.0.25:3000',
     ],
     credentials: true,
   })
