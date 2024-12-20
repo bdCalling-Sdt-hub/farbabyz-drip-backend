@@ -8,14 +8,13 @@ import { IUser, UserModal } from './user.interface';
 
 const userSchema = new Schema<IUser, UserModal>(
   {
-    name: {
-      type: String,
-      required: true,
-    },
     role: {
       type: String,
       enum: Object.values(USER_ROLES),
       required: true,
+    },
+    image: {
+      type: String,
     },
     email: {
       type: String,
@@ -32,30 +31,42 @@ const userSchema = new Schema<IUser, UserModal>(
     phone: {
       type: String,
     },
-    postCode: {
-      type: String,
-    },
+
     address: {
       type: String,
       default: '',
     },
-    country: {
+    endTime: {
       type: String,
-      default: '',
     },
+    startTime: {
+      type: String,
+    },
+    firstName: {
+      type: String,
+      required: true,
+    },
+    lastName: {
+      type: String,
+      required: true,
+    },
+
     status: {
       type: String,
-      enum: ['active', 'delete'],
+      enum: ['active', 'suspended', 'deleted'],
       default: 'active',
     },
     verified: {
       type: Boolean,
       default: false,
     },
-    image: {
-      type: String,
-      default:
-        'https://www.shutterstock.com/shutterstock/photos/1153673752/display_1500/stock-vector-profile-placeholder-image-gray-silhouette-no-photo-1153673752.jpg',
+    client: {
+      type: Schema.Types.ObjectId,
+      ref: 'Client',
+    },
+    driver: {
+      type: Schema.Types.ObjectId,
+      ref: 'Driver',
     },
     authentication: {
       type: {

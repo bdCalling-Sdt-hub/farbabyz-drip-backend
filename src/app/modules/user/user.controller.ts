@@ -3,7 +3,6 @@ import { StatusCodes } from 'http-status-codes';
 import catchAsync from '../../../shared/catchAsync';
 import sendResponse from '../../../shared/sendResponse';
 import { UserService } from './user.service';
-import getFilePath from '../../../shared/getFilePath';
 
 const createUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -11,7 +10,7 @@ const createUser = catchAsync(
       ...req.body,
     };
 
-    await UserService.createUserFromDb(value);
+    await UserService.createClientToDB(value);
 
     sendResponse(res, {
       success: true,
