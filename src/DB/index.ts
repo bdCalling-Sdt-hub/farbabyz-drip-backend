@@ -5,11 +5,14 @@ import { USER_ROLES } from '../enums/user';
 import { logger } from '../shared/logger';
 
 const superUser = {
-  name: 'Tiffany',
+  firstName: 'Mon',
+  lastName: 'Cposomt',
   role: USER_ROLES.ADMIN,
   email: config.admin.email,
   password: config.admin.password,
-  image: '',
+  address: 'Dhaka, Bangladesh',
+  phone: '01711111111',
+  image: 'https://i.ibb.co.com/2sw32KM/user.png',
   verified: true,
 };
 

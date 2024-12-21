@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 import ApiError from '../../../errors/ApiError';
-import { Product } from '../product/product.model';
+
 import { IReview } from './review.interface';
 import { Review } from './review.model';
 
@@ -31,17 +31,17 @@ const createReviewToDB = async (payload: Partial<IReview>) => {
   //   const averageRating = totalRatings / reviewCount;
   const averageRating = Math.round(totalRatings / reviewCount);
 
-  await Product.updateOne(
-    { _id: payload.product },
-    {
-      $set: {
-        rating: averageRating,
-        count: reviewCount,
-      },
-    }
-  );
+  // await Product.updateOne(
+  //   { _id: payload.product },
+  //   {
+  //     $set: {
+  //       rating: averageRating,
+  //       count: reviewCount,
+  //     },
+  //   }
+  // );
 
-  return result;
+  // return result;
 };
 
 export const ReviewService = {

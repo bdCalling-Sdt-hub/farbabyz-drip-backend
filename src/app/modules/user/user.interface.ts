@@ -3,16 +3,19 @@ import { USER_ROLES } from '../../../enums/user';
 
 export type IUser = {
   role: USER_ROLES;
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
-  phone: string;
+  address: string;
   password: string;
-  postCode: string;
-  address?: string;
-  country?: string;
-  status: 'active' | 'delete';
+  status: 'active' | 'suspended' | 'deleted';
   verified: boolean;
+  phone: string;
   image: string;
+  startTime: string;
+  endTime: string;
+  client?: Types.ObjectId;
+  driver?: Types.ObjectId;
   authentication?: {
     isResetPassword: boolean;
     oneTimeCode: number;

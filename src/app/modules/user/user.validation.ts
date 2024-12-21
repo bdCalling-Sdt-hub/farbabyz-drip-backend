@@ -1,20 +1,21 @@
 import { z } from 'zod';
 
 const createUserZodSchema = z.object({
-  name: z.string({ required_error: 'First name is required' }),
-  email: z.string({ required_error: 'Email name is required' }),
-  phone: z.string({ required_error: 'Phone name is required' }),
-  password: z.string({ required_error: 'Password is required' }),
-  address: z.string().optional(),
-  postCode: z.string().optional(),
+  body: z.object({
+    firstName: z.string({ required_error: 'FirstName name is required' }),
+    lastName: z.string({ required_error: 'LastName name is required' }),
+    email: z.string({ required_error: 'Email name is required' }),
+    phone: z.string({ required_error: 'Phone name is required' }),
+    password: z.string({ required_error: 'Password is required' }),
+    address: z.string().optional(),
+  }),
 });
 
 const updateZodSchema = z.object({
-  name: z.string().optional(),
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
   phone: z.string().optional(),
   address: z.string().optional(),
-  postCode: z.string().optional(),
-  country: z.string().optional(),
 });
 
 const updateLocationZodSchema = z.object({
